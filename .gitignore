@@ -1,0 +1,8 @@
+vixflocam.log
+vixflocam_debug.log
+.vscode/
+prompt.md
+__pycache__/
+ZOOM_ANALYSIS.md
+data/recordings/
+data/cameras.json
