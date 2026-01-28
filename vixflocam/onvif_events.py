@@ -127,7 +127,6 @@ class OnvifEventPuller:
         self._timeout = (1.0, 2.0)
         self._auth_digest = HTTPDigestAuth(cfg.username, cfg.password)
         self._auth_basic = HTTPBasicAuth(cfg.username, cfg.password)
-        self._wsse = _soap_wsse_header(cfg.username, cfg.password, use_digest=True) if (cfg.username or cfg.password) else None
 
         self._device_urls = [
             f"http://{cfg.host}:{int(cfg.port)}/onvif/device_service",
@@ -146,22 +145,30 @@ class OnvifEventPuller:
             "PullMessages": "http://www.onvif.org/ver10/events/wsdl/PullMessages",
         }
         action_uri = action_uri_map.get(action, action)
-
-        body12 = _soap_envelope_with_header(xml, self._wsse)
-        headers12 = {"Content-Type": "application/soap+xml; charset=utf-8"}
-
-        body11 = body12.replace(
-            "http://www.w3.org/2003/05/soap-envelope",
-            "http://schemas.xmlsoap.org/soap/envelope/",
-        )
         headers11 = {
             "Content-Type": "text/xml; charset=utf-8",
             "SOAPAction": f'"{action_uri}"',
         }
+        headers12 = {"Content-Type": "application/soap+xml; charset=utf-8"}
 
-        for headers, body in ((headers12, body12), (headers11, body11)):
+        for headers, soap in ((headers11, "1.1"), (headers12, "1.2")):
             for auth in (self._auth_digest, self._auth_basic, None):
                 try:
+                    # IMPORTANT: do NOT cache WSSE headers; many devices reject replays/stale Created.
+                    wsse = (
+                        _soap_wsse_header(self._cfg.username, self._cfg.password, use_digest=True)
+                        if (self._cfg.username or self._cfg.password)
+                        else None
+                    )
+                    body12 = _soap_envelope_with_header(xml, wsse)
+                    body = (
+                        body12.replace(
+                            "http://www.w3.org/2003/05/soap-envelope",
+                            "http://schemas.xmlsoap.org/soap/envelope/",
+                        )
+                        if soap == "1.1"
+                        else body12
+                    )
                     r = self._session.post(url, data=body, headers=headers, auth=auth, timeout=self._timeout)
                     if r.status_code == 200 and r.text:
                         self.last_error = None

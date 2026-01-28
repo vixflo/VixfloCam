@@ -40,6 +40,9 @@ class AddCameraDialog(QtWidgets.QDialog):
         self.setWindowTitle("Add / Edit Camera")
         self.setModal(True)
 
+        self._ui_bridge = _UiInvokeBridge()
+        self._ui_bridge.invoke.connect(self._invoke_ui)
+
         self._camera_id: str | None = camera.id if camera else None
 
         self.name_edit = QtWidgets.QLineEdit()
@@ -120,6 +123,13 @@ class AddCameraDialog(QtWidgets.QDialog):
         self.port_edit.valueChanged.connect(self._update_preview)
         self.path_combo.currentTextChanged.connect(self._update_preview)
 
+    def _invoke_ui(self, fn: object) -> None:
+        try:
+            if callable(fn):
+                fn()
+        except Exception:
+            return
+
     def _detect_onvif(self) -> None:
         host = self.host_edit.text().strip()
         username = self.user_edit.text().strip()
@@ -171,7 +181,7 @@ class AddCameraDialog(QtWidgets.QDialog):
                 self.onvif_port.setValue(int(found))
                 QtWidgets.QMessageBox.information(self, "Detect ONVIF", f"ONVIF detected on port: {found}")
 
-            QtCore.QTimer.singleShot(0, finish)
+            self._ui_bridge.invoke.emit(finish)
 
         threading.Thread(target=run, daemon=True).start()
 
@@ -220,6 +230,10 @@ class AddCameraDialog(QtWidgets.QDialog):
 
 class _VlcEventBridge(QtCore.QObject):
     vlc_event = QtCore.Signal(str)
+
+
+class _UiInvokeBridge(QtCore.QObject):
+    invoke = QtCore.Signal(object)
 
 
 class _WinMouseHook:
@@ -627,6 +641,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self._ptz_connect_seq: int = 0
         self._ptz_connecting: bool = False
         self._ptz_diag_seq: int = 0
+        self._ptz_no_support_ids: set[str] = set()
+        self._ptz_worker_lock = threading.Lock()
+        self._ptz_worker_evt = threading.Event()
+        self._ptz_worker_stop = threading.Event()
+        self._ptz_worker_latest_move: tuple[str, float, float] | None = None
+        self._ptz_worker_stop_cam_id: str | None = None
+        self._ptz_worker_thread = threading.Thread(target=self._ptz_worker_loop, daemon=True)
+        self._ptz_worker_thread.start()
+        self._ui_bridge = _UiInvokeBridge()
+        self._ui_bridge.invoke.connect(self._invoke_ui)
         self._vlc_bridge = _VlcEventBridge()
         self._vlc_bridge.vlc_event.connect(self._on_vlc_event)
 
@@ -704,6 +728,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self._ptz_move_timer: QtCore.QTimer | None = None
         self._ptz_command_queue: list[tuple[float, float]] = []
         self._ptz_last_command_ts: float = 0.0
+        self._ptz_pending_move: tuple[float, float] | None = None
+        self._ptz_pending_move_cam_id: str | None = None
+        self._ptz_hold_dir: tuple[float, float] | None = None
+        self._ptz_hold_timer = QtCore.QTimer(self)
+        self._ptz_hold_timer.setInterval(250)
+        self._ptz_hold_timer.timeout.connect(self._ptz_hold_tick)
 
         self.zoom_out_btn = QtWidgets.QPushButton("Zoom-")
         self.zoom_reset_btn = QtWidgets.QPushButton("Zoom 1:1")
@@ -736,17 +766,20 @@ class MainWindow(QtWidgets.QMainWindow):
         grid.addWidget(self.ptz_right, 2, 2)
         grid.addWidget(self.ptz_down, 3, 1)
 
-        # PTZ butoane cu viteze mai mici pentru control mai bun
-        self.ptz_up.pressed.connect(lambda: self._ptz_move(0.0, 0.3))
-        self.ptz_up.released.connect(self._ptz_stop)
-        self.ptz_down.pressed.connect(lambda: self._ptz_move(0.0, -0.3))
-        self.ptz_down.released.connect(self._ptz_stop)
-        self.ptz_left.pressed.connect(lambda: self._ptz_move(-0.3, 0.0))
-        self.ptz_left.released.connect(self._ptz_stop)
-        self.ptz_right.pressed.connect(lambda: self._ptz_move(0.3, 0.0))
-        self.ptz_right.released.connect(self._ptz_stop)
-        self.ptz_stop.clicked.connect(self._ptz_stop)
+        # PTZ: trimite comenzi repetate cât timp butonul e ținut apăsat (mai robust decât o singură comandă).
+        self.ptz_up.pressed.connect(lambda: self._ptz_begin_hold(0.0, 0.45))
+        self.ptz_up.released.connect(self._ptz_end_hold)
+        self.ptz_down.pressed.connect(lambda: self._ptz_begin_hold(0.0, -0.45))
+        self.ptz_down.released.connect(self._ptz_end_hold)
+        self.ptz_left.pressed.connect(lambda: self._ptz_begin_hold(-0.45, 0.0))
+        self.ptz_left.released.connect(self._ptz_end_hold)
+        self.ptz_right.pressed.connect(lambda: self._ptz_begin_hold(0.45, 0.0))
+        self.ptz_right.released.connect(self._ptz_end_hold)
+        self.ptz_stop.clicked.connect(self._ptz_end_hold)
         self.ptz_diag.clicked.connect(self._ptz_diagnostics)
+
+        # Start disabled; we enable after a successful PTZ connect.
+        self._set_ptz_controls_enabled(False)
 
         self.add_btn = QtWidgets.QPushButton("Add")
         self.edit_btn = QtWidgets.QPushButton("Edit")
@@ -835,8 +868,20 @@ class MainWindow(QtWidgets.QMainWindow):
         # start low-level mouse hook after UI is shown
         QtCore.QTimer.singleShot(0, self._start_mouse_hook)
 
+    def _invoke_ui(self, fn: object) -> None:
+        try:
+            if callable(fn):
+                fn()
+        except Exception:
+            return
+
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         logger.info("Closing application...")
+        try:
+            self._ptz_worker_stop.set()
+            self._ptz_worker_evt.set()
+        except Exception:
+            pass
         try:
             logger.debug("Stopping mouse hook...")
             self._mouse_hook.stop()
@@ -864,6 +909,91 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Forțează ieșirea dacă există thread-uri blocate
         QtCore.QTimer.singleShot(1000, lambda: sys.exit(0))
+
+    def _ptz_worker_loop(self) -> None:
+        while not self._ptz_worker_stop.is_set():
+            # Wait for new PTZ work; keep a small timeout so stop feels responsive.
+            self._ptz_worker_evt.wait(0.2)
+            self._ptz_worker_evt.clear()
+            if self._ptz_worker_stop.is_set():
+                break
+
+            with self._ptz_worker_lock:
+                stop_cam_id = self._ptz_worker_stop_cam_id
+                move = self._ptz_worker_latest_move
+                # Stop has priority over move.
+                self._ptz_worker_stop_cam_id = None
+                self._ptz_worker_latest_move = None
+
+            if stop_cam_id is not None:
+                self._ptz_worker_do_stop(stop_cam_id)
+                continue
+            if move is not None:
+                cam_id, x, y = move
+                self._ptz_worker_do_move(cam_id, x, y)
+
+    def _ptz_worker_do_move(self, cam_id: str, x: float, y: float) -> None:
+        client = self._ptz_client
+        if client is None or self._ptz_for_camera_id != cam_id:
+            return
+
+        try:
+            client.continuous_move(float(x), float(y))
+        except Exception as e:
+            msg = str(e) or e.__class__.__name__
+            short = " ".join(msg.split())
+            if len(short) > 120:
+                short = short[:117] + "..."
+            self._ui_bridge.invoke.emit(
+                lambda cid=cam_id, s=short: self._ptz_set_status_if_current(cid, f"PTZ: move failed ({s})")
+            )
+            return
+
+        self._ui_bridge.invoke.emit(
+            lambda cid=cam_id: self._ptz_set_status_if_current(cid, self._ptz_status_text_moving())
+        )
+
+    def _ptz_worker_do_stop(self, cam_id: str) -> None:
+        client = self._ptz_client
+        if client is None or self._ptz_for_camera_id != cam_id:
+            return
+
+        try:
+            client.stop()
+        except Exception as e:
+            msg = str(e) or e.__class__.__name__
+            short = " ".join(msg.split())
+            if len(short) > 120:
+                short = short[:117] + "..."
+            self._ui_bridge.invoke.emit(
+                lambda cid=cam_id, s=short: self._ptz_set_status_if_current(cid, f"PTZ: stop failed ({s})")
+            )
+            return
+
+        self._ui_bridge.invoke.emit(
+            lambda cid=cam_id: self._ptz_set_status_if_current(cid, self._ptz_status_text_connected())
+        )
+
+    def _ptz_status_text_connected(self) -> str:
+        cam = self._current_camera
+        if cam is None:
+            return "PTZ: connected"
+        return f"PTZ: connected (port {cam.onvif_port})"
+
+    def _ptz_status_text_moving(self) -> str:
+        cam = self._current_camera
+        if cam is None:
+            return "PTZ: moving"
+        return f"PTZ: moving (port {cam.onvif_port})"
+
+    def _ptz_set_status_if_current(self, cam_id: str, text: str) -> None:
+        cam = self._current_camera
+        if cam is None or cam.id != cam_id:
+            return
+        try:
+            self.ptz_status.setText(str(text))
+        except Exception:
+            return
 
     def _start_mouse_hook(self) -> None:
         # Captures mouse wheel even when VLC owns the child HWND.
@@ -1672,12 +1802,41 @@ class MainWindow(QtWidgets.QMainWindow):
 
         QtCore.QTimer.singleShot(delay_ms, do_reconnect)
 
+    def _set_ptz_controls_enabled(self, enabled: bool) -> None:
+        for b in (self.ptz_up, self.ptz_down, self.ptz_left, self.ptz_right, self.ptz_stop):
+            b.setEnabled(bool(enabled))
+
+    def _ptz_hold_tick(self) -> None:
+        if self._ptz_hold_dir is None:
+            return
+        x, y = self._ptz_hold_dir
+        self._ptz_move(x, y)
+
+    def _ptz_begin_hold(self, x: float, y: float) -> None:
+        self._ptz_hold_dir = (float(x), float(y))
+        self._ptz_move(float(x), float(y))
+        if not self._ptz_hold_timer.isActive():
+            self._ptz_hold_timer.start()
+
+    def _ptz_end_hold(self) -> None:
+        self._ptz_hold_dir = None
+        if self._ptz_hold_timer.isActive():
+            self._ptz_hold_timer.stop()
+        self._ptz_stop()
+
     def _init_ptz_for_camera(self, cam: Camera) -> None:
         # Reset state when switching cameras
         self._ptz_client = None
         self._ptz_for_camera_id = None
         self._ptz_connecting = False
         self._ptz_connect_seq += 1
+        self._ptz_pending_move = None
+        self._ptz_pending_move_cam_id = None
+        self._ptz_hold_dir = None
+        if self._ptz_hold_timer.isActive():
+            self._ptz_hold_timer.stop()
+
+        self._set_ptz_controls_enabled(False)
 
         if not cam.onvif_port:
             self.ptz_status.setText("PTZ: disabled (set ONVIF port)")
@@ -1685,9 +1844,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if not cam.host or not cam.password_dpapi_b64:
             self.ptz_status.setText("PTZ: missing host/password")
             return
+        if cam.id in self._ptz_no_support_ids:
+            self.ptz_status.setText("PTZ: not supported by camera")
+            return
 
-        # Do not auto-connect immediately; show ready state.
-        self.ptz_status.setText(f"PTZ: ready (port {cam.onvif_port})")
+        # Allow user interactions while connecting; commands are queued until a client is ready.
+        self._set_ptz_controls_enabled(True)
+
+        # Auto-connect in background so the first PTZ command is responsive.
+        self.ptz_status.setText(f"PTZ: connecting... (port {cam.onvif_port})")
+        self._start_ptz_connect(cam)
 
     def _start_ptz_connect(self, cam: Camera) -> None:
         if not cam.onvif_port or not cam.host or not cam.password_dpapi_b64:
@@ -1701,6 +1867,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self._ptz_connect_seq += 1
         seq = self._ptz_connect_seq
         self.ptz_status.setText(f"PTZ: connecting... (port {cam.onvif_port})")
+        t0 = time.monotonic()
+        try:
+            logger.debug("PTZ connect start: cam=%s host=%s port=%s seq=%s", cam.name, cam.host, cam.onvif_port, seq)
+        except Exception:
+            pass
 
         # Watchdog: if connect doesn't finish quickly, mark as timeout (ignore late results)
         def on_timeout() -> None:
@@ -1712,8 +1883,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self._ptz_client = None
             self._ptz_for_camera_id = None
             self.ptz_status.setText(f"PTZ: timeout (port {cam.onvif_port})")
+            try:
+                logger.debug(
+                    "PTZ connect timeout: cam=%s host=%s port=%s seq=%s after=%.2fs",
+                    cam.name,
+                    cam.host,
+                    cam.onvif_port,
+                    seq,
+                    time.monotonic() - t0,
+                )
+            except Exception:
+                pass
 
-        QtCore.QTimer.singleShot(6000, on_timeout)
+        QtCore.QTimer.singleShot(15000, on_timeout)
 
         def connect() -> None:
             err: str | None = None
@@ -1736,13 +1918,80 @@ class MainWindow(QtWidgets.QMainWindow):
                 if client is None:
                     self._ptz_client = None
                     self._ptz_for_camera_id = None
-                    self.ptz_status.setText(f"PTZ: not available (port {cam.onvif_port})")
+                    if self._ptz_pending_move_cam_id == cam.id:
+                        self._ptz_pending_move = None
+                        self._ptz_pending_move_cam_id = None
+                    if err:
+                        short = " ".join(err.split())
+                        if len(short) > 120:
+                            short = short[:117] + "..."
+                        low = short.lower()
+                        if "no ptz" in low or "ptz service" in low or "missing ptz" in low:
+                            self._ptz_no_support_ids.add(cam.id)
+                            self._set_ptz_controls_enabled(False)
+                            self.ptz_status.setText("PTZ: not supported by camera")
+                            try:
+                                logger.debug(
+                                    "PTZ not supported: cam=%s host=%s port=%s after=%.2fs err=%s",
+                                    cam.name,
+                                    cam.host,
+                                    cam.onvif_port,
+                                    time.monotonic() - t0,
+                                    short,
+                                )
+                            except Exception:
+                                pass
+                            return
+                        self.ptz_status.setText(f"PTZ: not available ({short})")
+                        try:
+                            logger.debug(
+                                "PTZ connect failed: cam=%s host=%s port=%s after=%.2fs err=%s",
+                                cam.name,
+                                cam.host,
+                                cam.onvif_port,
+                                time.monotonic() - t0,
+                                short,
+                            )
+                        except Exception:
+                            pass
+                    else:
+                        self.ptz_status.setText(f"PTZ: not available (port {cam.onvif_port})")
+                        try:
+                            logger.debug(
+                                "PTZ connect failed: cam=%s host=%s port=%s after=%.2fs err=<none>",
+                                cam.name,
+                                cam.host,
+                                cam.onvif_port,
+                                time.monotonic() - t0,
+                            )
+                        except Exception:
+                            pass
                     return
                 self._ptz_client = client
                 self._ptz_for_camera_id = cam.id
+                self._ptz_no_support_ids.discard(cam.id)
                 self.ptz_status.setText(f"PTZ: connected (port {cam.onvif_port})")
+                self._set_ptz_controls_enabled(True)
+                try:
+                    logger.debug(
+                        "PTZ connect ok: cam=%s host=%s port=%s after=%.2fs",
+                        cam.name,
+                        cam.host,
+                        cam.onvif_port,
+                        time.monotonic() - t0,
+                    )
+                except Exception:
+                    pass
 
-            QtCore.QTimer.singleShot(0, finish)
+                # If a move was requested while connecting, apply it now.
+                pending = self._ptz_pending_move if self._ptz_pending_move_cam_id == cam.id else None
+                self._ptz_pending_move = None
+                self._ptz_pending_move_cam_id = None
+                if pending is not None and self._current_camera is not None and self._current_camera.id == cam.id:
+                    x, y = pending
+                    self._ptz_move(x, y)
+
+            self._ui_bridge.invoke.emit(finish)
 
         threading.Thread(target=connect, daemon=True).start()
 
@@ -1786,6 +2035,9 @@ class MainWindow(QtWidgets.QMainWindow):
             def finish() -> None:
                 if self._ptz_diag_seq != seq:
                     return
+                # User might have switched cameras while diagnostics was running.
+                if self._current_camera is None or self._current_camera.id != cam.id:
+                    return
                 self.ptz_diag.setEnabled(True)
                 self.ptz_diag.setText("PTZ Diagnostics")
                 if "error" in rep:
@@ -1810,14 +2062,25 @@ class MainWindow(QtWidgets.QMainWindow):
                     return
                 ok_caps = bool(rep.get("device_service_ok"))
                 ok_profiles = bool(rep.get("get_profiles_ok"))
+                ptz_supported = bool(rep.get("ptz_supported", True))
+                ok_status = bool(rep.get("ptz_getstatus_ok"))
                 ok_stop = bool(rep.get("ptz_stop_ok"))
-                ok_move = bool(rep.get("ptz_move_ok"))
+
+                if not ptz_supported:
+                    self._ptz_no_support_ids.add(cam.id)
+                    self._set_ptz_controls_enabled(False)
+                else:
+                    self._ptz_no_support_ids.discard(cam.id)
+                    # Keep enabled (commands will still be queued until connect finishes).
+                    self._set_ptz_controls_enabled(True)
 
                 if not ok_caps:
                     self.ptz_status.setText("PTZ: ONVIF device_service failed")
                 elif not ok_profiles:
                     self.ptz_status.setText("PTZ: ONVIF media GetProfiles failed")
-                elif ok_stop or ok_move:
+                elif not ptz_supported:
+                    self.ptz_status.setText("PTZ: not supported by camera")
+                elif ok_status or ok_stop:
                     self.ptz_status.setText(f"PTZ: ONVIF OK (port {cam.onvif_port})")
                 else:
                     self.ptz_status.setText("PTZ: PTZ calls failed (auth/profile/firmware)")
@@ -1831,8 +2094,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 if rep.get("ptz_xaddr"):
                     lines.append(f"PTZ XAddr: {rep.get('ptz_xaddr')}")
                 lines.append(f"GetProfiles OK: {rep.get('get_profiles_ok')}")
+                lines.append(f"PTZ Supported: {rep.get('ptz_supported')}")
+                lines.append(f"PTZ GetStatus OK: {rep.get('ptz_getstatus_ok')}")
                 lines.append(f"PTZ Stop OK: {rep.get('ptz_stop_ok')}")
-                lines.append(f"PTZ Move OK: {rep.get('ptz_move_ok')}")
 
                 tests = rep.get("tests")
                 if isinstance(tests, list) and tests:
@@ -1850,7 +2114,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QMessageBox.information(self, "PTZ Diagnostics", "\n".join(lines))
                 return
 
-            QtCore.QTimer.singleShot(0, finish)
+            self._ui_bridge.invoke.emit(finish)
 
         threading.Thread(target=run, daemon=True).start()
 
@@ -1858,7 +2122,11 @@ class MainWindow(QtWidgets.QMainWindow):
         cam = self._current_camera
         if cam is None or not cam.onvif_port:
             return
+        if cam.id in self._ptz_no_support_ids:
+            return
         if self._ptz_client is None or self._ptz_for_camera_id != cam.id:
+            self._ptz_pending_move = (x, y)
+            self._ptz_pending_move_cam_id = cam.id
             self._start_ptz_connect(cam)
             return
         client = self._ptz_client
@@ -1880,18 +2148,9 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self._ptz_last_command_ts = now
 
-        def move() -> None:
-            try:
-                client.continuous_move(x, y)
-                QtCore.QTimer.singleShot(0, lambda c=cam: self.ptz_status.setText(f"PTZ: moving (port {c.onvif_port})") if c else None)
-            except Exception as e:
-                QtCore.QTimer.singleShot(
-                    0,
-                    lambda: self.ptz_status.setText("PTZ: move failed (check ONVIF credentials/settings)"),
-                )
-                return
-
-        threading.Thread(target=move, daemon=True).start()
+        with self._ptz_worker_lock:
+            self._ptz_worker_latest_move = (cam.id, float(x), float(y))
+        self._ptz_worker_evt.set()
 
     def _process_ptz_queue(self) -> None:
         """Procesează comenzile PTZ din queue."""
@@ -1909,9 +2168,13 @@ class MainWindow(QtWidgets.QMainWindow):
         cam = self._current_camera
         if cam is None:
             return
+        if cam.id in self._ptz_no_support_ids:
+            return
         
         # Golește queue-ul de comenzi
         self._ptz_command_queue.clear()
+        self._ptz_pending_move = None
+        self._ptz_pending_move_cam_id = None
         
         if self._ptz_client is None or self._ptz_for_camera_id != cam.id:
             return
@@ -1919,17 +2182,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if client is None:
             return
 
-        def stop() -> None:
-            try:
-                client.stop()
-                cam = self._current_camera
-                if cam is not None and cam.onvif_port:
-                    QtCore.QTimer.singleShot(0, lambda c=cam: self.ptz_status.setText(f"PTZ: connected (port {c.onvif_port})") if c else None)
-            except Exception:
-                QtCore.QTimer.singleShot(0, lambda: self.ptz_status.setText("PTZ: stop failed"))
-                return
-
-        threading.Thread(target=stop, daemon=True).start()
+        with self._ptz_worker_lock:
+            self._ptz_worker_latest_move = None
+            self._ptz_worker_stop_cam_id = cam.id
+        self._ptz_worker_evt.set()
 
     def _add_camera(self) -> None:
         dlg = AddCameraDialog(self, None)

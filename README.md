@@ -79,6 +79,7 @@ Parolele sunt salvate criptat cu Windows DPAPI (legate de user-ul tău Windows).
 - Audio + control volum (slider + mute)
 - PTZ (Pan/Tilt) prin ONVIF (dacă activezi ONVIF și setezi portul)
   - În **Edit Camera** ai buton **Detect ONVIF port** (încearcă automat porturile comune)
+  - Notă: nu toate camerele au PTZ. Dacă ONVIF nu raportează serviciul PTZ, vei vedea „PTZ: not supported by camera”.
 - Înregistrare locală (Start/Stop Recording)
   - Fișierele se salvează în: `./data/recordings/` (format `.ts`)
 

@@ -52,6 +52,69 @@ class SmokeTests(unittest.TestCase):
         self.assertIn("tests", report)
         self.assertIsInstance(report["tests"], list)
 
+    def test_extract_soap_fault(self):
+        from vixflocam.onvif_ptz import _extract_soap_fault
+
+        soap11 = """<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Body>
+    <s:Fault>
+      <faultcode>s:Client</faultcode>
+      <faultstring>InvalidArgVal</faultstring>
+    </s:Fault>
+  </s:Body>
+</s:Envelope>
+"""
+        self.assertEqual(_extract_soap_fault(soap11), "InvalidArgVal")
+
+        soap12 = """<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+  <s:Body>
+    <s:Fault>
+      <s:Code><s:Value>s:Sender</s:Value></s:Code>
+      <s:Reason><s:Text xml:lang="en">NotAuthorized</s:Text></s:Reason>
+    </s:Fault>
+  </s:Body>
+</s:Envelope>
+"""
+        self.assertEqual(_extract_soap_fault(soap12), "NotAuthorized")
+
+    def test_extract_profile_and_ptz_cfg_token(self):
+        from vixflocam.onvif_ptz import _extract_profile_and_ptz_cfg_token
+
+        xml = """<root>
+  <Profiles token="p1">
+    <PTZConfiguration token="ptz1" />
+  </Profiles>
+</root>
+"""
+        profile, cfg = _extract_profile_and_ptz_cfg_token(xml)
+        self.assertEqual(profile, "p1")
+        self.assertEqual(cfg, "ptz1")
+
+        xml2 = """<root>
+  <Profiles token="p1" />
+  <Profiles token="p2"><PTZConfiguration token="ptz2" /></Profiles>
+</root>
+"""
+        profile2, cfg2 = _extract_profile_and_ptz_cfg_token(xml2)
+        self.assertEqual(profile2, "p2")
+        self.assertEqual(cfg2, "ptz2")
+
+    def test_extract_ptz_spaces_from_config_options(self):
+        from vixflocam.onvif_ptz import _extract_ptz_spaces_from_config_options
+
+        xml = """<root>
+  <URI>http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace</URI>
+  <URI>http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace</URI>
+  <URI>http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace</URI>
+</root>
+"""
+        spaces = _extract_ptz_spaces_from_config_options(xml)
+        self.assertIn("pan_tilt_velocity_space", spaces)
+        self.assertIn("pan_tilt_translation_space", spaces)
+        self.assertIn("pan_tilt_speed_space", spaces)
+
     def test_zoom_view_math(self):
         """Sanity-check zoom math (widget-scale + viewport clipping)."""
         vw, vh = 2560, 1440  # 16:9
