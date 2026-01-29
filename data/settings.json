@@ -1,5 +1,6 @@
 {
-  "recordings_dir": "C:/xampp/htdocs/vixflodev-ro/VixfloCam/data/recordings/Evenimente",
+  "recordings_dir": "C:/xampp/htdocs/vixflodev-ro/VixfloCam/data/recordings/evenimente2",
+  "event_recording_enabled": true,
   "detect_motion": false,
   "detect_person": true,
   "event_record_seconds": 60,

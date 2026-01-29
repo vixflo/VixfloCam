@@ -1,0 +1,118 @@
+/* VixfloCam - Dark Modern (minimal) */
+
+QWidget {
+  font-size: 10pt;
+  color: #e6e6e6;
+  background: #1e1f22;
+}
+
+QMainWindow::separator {
+  background: #2a2b2e;
+  width: 1px;
+  height: 1px;
+}
+
+QGroupBox {
+  border: 1px solid #2f3136;
+  border-radius: 8px;
+  margin-top: 12px;
+  padding: 8px;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  left: 10px;
+  padding: 0 6px;
+  color: #cfd8dc;
+}
+
+QPushButton {
+  background: #2a2b2e;
+  border: 1px solid #3a3b40;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+QPushButton:hover { background: #32343a; }
+QPushButton:pressed { background: #222327; }
+QPushButton:disabled { color: #7a7a7a; background: #232427; border-color: #2a2b2e; }
+
+QCheckBox, QLabel { background: transparent; }
+
+QToolBar {
+  background: #202226;
+  border: 1px solid #2f3136;
+  border-radius: 10px;
+  padding: 4px;
+  spacing: 6px;
+}
+QToolBar::separator {
+  background: #2f3136;
+  width: 1px;
+  margin: 4px 6px;
+}
+QToolButton {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px;
+}
+QToolButton:hover { background: #2b2d31; border-color: #3a3b40; }
+QToolButton:pressed { background: #232427; }
+QToolButton:checked { background: #2b79c2; border-color: #2b79c2; color: #ffffff; }
+QToolButton:disabled { color: #7a7a7a; }
+
+QLineEdit, QSpinBox, QComboBox {
+  background: #141518;
+  border: 1px solid #2f3136;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+QLineEdit:focus, QSpinBox:focus, QComboBox:focus { border-color: #2b79c2; }
+QComboBox::drop-down { border: 0px; width: 22px; }
+QComboBox::down-arrow { image: none; }
+
+QSlider::groove:horizontal {
+  border: 1px solid #3a3b40;
+  height: 6px;
+  border-radius: 3px;
+  background: #2a2b2e;
+}
+QSlider::handle:horizontal {
+  background: #4aa3ff;
+  border: 1px solid #2b79c2;
+  width: 14px;
+  margin: -6px 0;
+  border-radius: 7px;
+}
+
+QListWidget {
+  background: #1b1c1f;
+  border: 1px solid #2f3136;
+  border-radius: 8px;
+}
+QListWidget::item { padding: 6px 8px; }
+QListWidget::item:selected { background: #2b79c2; color: white; }
+
+QPlainTextEdit {
+  background: #141518;
+  border: 1px solid #2f3136;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+/* PTZ compact pad */
+QToolButton#ptzPadButton {
+  background: #2a2b2e;
+  border: 1px solid #3a3b40;
+  border-radius: 22px;
+  font-size: 12pt;
+}
+QToolButton#ptzPadButton:hover { background: #32343a; }
+QToolButton#ptzPadButton:pressed { background: #222327; }
+QToolButton#ptzPadStop {
+  background: #2a2b2e;
+  border: 1px solid #3a3b40;
+  border-radius: 24px;
+  font-size: 12pt;
+}
+QToolButton#ptzPadStop:hover { background: #3a2a2a; border-color: #7a3a3a; }
+QToolButton#ptzPadStop:pressed { background: #2a1f1f; }

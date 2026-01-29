@@ -8,6 +8,8 @@ from pathlib import Path
 @dataclass
 class AppSettings:
     recordings_dir: str = ""  # empty = default under data/
+    # Whether Event Recording checkbox is enabled (persisted UI state)
+    event_recording_enabled: bool = True
     # Event detection/recording
     detect_motion: bool = True
     detect_person: bool = True
@@ -57,6 +59,7 @@ def load_settings(base_dir: Path) -> AppSettings:
 
     detect_motion = as_bool(raw.get("detect_motion", True), True)
     detect_person = as_bool(raw.get("detect_person", True), True)
+    event_recording_enabled = as_bool(raw.get("event_recording_enabled", False), False)
     desktop_notifications = as_bool(raw.get("desktop_notifications", True), True)
 
     event_record_seconds = max(10, min(300, as_int(raw.get("event_record_seconds", 60), 60)))
@@ -64,6 +67,7 @@ def load_settings(base_dir: Path) -> AppSettings:
 
     return AppSettings(
         recordings_dir=rec,
+        event_recording_enabled=event_recording_enabled,
         detect_motion=detect_motion,
         detect_person=detect_person,
         event_record_seconds=event_record_seconds,
@@ -76,6 +80,7 @@ def save_settings(base_dir: Path, settings: AppSettings) -> None:
     path = _settings_path(base_dir)
     payload = {
         "recordings_dir": settings.recordings_dir,
+        "event_recording_enabled": bool(getattr(settings, "event_recording_enabled", False)),
         "detect_motion": bool(settings.detect_motion),
         "detect_person": bool(settings.detect_person),
         "event_record_seconds": int(settings.event_record_seconds),

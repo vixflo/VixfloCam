@@ -12,6 +12,7 @@
 
 - Persistare: `vixflocam/events_store.py` → `data/events.json` (max ~500 evenimente).
 - Listare: `vixflocam/app.py` (`_refresh_events_list`) afișează evenimentele, cu fallback pe fișiere `.ts`.
+- Înregistrarea continuă pe segmente (rolling clips) rulează doar ca fallback dacă nu există nicio cameră configurată pentru ONVIF Events.
 
 ## Structura unui eveniment
 

@@ -1,1 +1,86 @@
-[]
+[
+  {
+    "ts": 1769706476.7420936,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\HOL_CASA_event_20260129_190756.ts"
+  },
+  {
+    "ts": 1769706444.9902635,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\CURTEA_DIN_FAȚĂ_event_20260129_190724.ts"
+  },
+  {
+    "ts": 1769706065.3057141,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\HOL_CASA_event_20260129_190105.ts"
+  },
+  {
+    "ts": 1769706054.2148013,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\CURTEA_DIN_FAȚĂ_event_20260129_190054.ts"
+  },
+  {
+    "ts": 1769706004.9393573,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\Tapo_C510WS_C799_event_20260129_190004.ts"
+  },
+  {
+    "ts": 1769705931.1308534,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\HOL_CASA_event_20260129_185851.ts"
+  }
+]

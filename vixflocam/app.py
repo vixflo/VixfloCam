@@ -764,6 +764,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._settings: AppSettings = load_settings(self._base_dir)
         self.setWindowTitle("VixfloCam")
         self.resize(1100, 650)
+        self._closing: bool = False
 
         self._player: VlcPlayer | None = None
         self._current_camera: Camera | None = None
@@ -848,27 +849,110 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vol_slider.setValue(120)
         self.vol_slider.valueChanged.connect(self._on_volume_changed)
 
-        self.mute_chk = QtWidgets.QCheckBox("Mute")
-        self.mute_chk.toggled.connect(self._on_mute_toggled)
+        def _ico(sp: object) -> QtGui.QIcon:
+            try:
+                return self.style().standardIcon(sp)  # type: ignore[arg-type]
+            except Exception:
+                return QtGui.QIcon()
 
-        self.record_btn = QtWidgets.QPushButton("Start Recording")
-        self.record_btn.setCheckable(True)
-        self.record_btn.toggled.connect(self._on_record_toggled)
+        def _ico_any(*candidates: object) -> QtGui.QIcon:
+            for c in candidates:
+                if c is None:
+                    continue
+                try:
+                    icon = _ico(c)
+                    if not icon.isNull():
+                        return icon
+                except Exception:
+                    continue
+            return QtGui.QIcon()
 
-        self.event_rec_chk = QtWidgets.QCheckBox("Event Recording")
-        self.event_rec_chk.toggled.connect(self._on_event_recording_toggled)
+        # Modern controls toolbar (replaces the old ctrl_row).
+        self.ctrl_toolbar = QtWidgets.QToolBar("Controls")
+        self.ctrl_toolbar.setMovable(False)
+        self.ctrl_toolbar.setFloatable(False)
+        self.ctrl_toolbar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+        self.ctrl_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.ctrl_toolbar.setIconSize(QtCore.QSize(18, 18))
 
-        self.rec_dir_btn = QtWidgets.QPushButton("Recordings Folder")
-        self.rec_dir_btn.clicked.connect(self._choose_recordings_folder)
+        # Volume widget inside toolbar
+        vol_wrap = QtWidgets.QWidget()
+        vol_l = QtWidgets.QHBoxLayout(vol_wrap)
+        vol_l.setContentsMargins(6, 0, 6, 0)
+        vol_l.setSpacing(6)
+        vol_icon = QtWidgets.QLabel()
+        try:
+            vol_icon.setPixmap(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaVolume).pixmap(16, 16))
+        except Exception:
+            vol_icon.setText("Vol")
+        vol_icon.setToolTip("Volume")
+        self.vol_slider.setFixedWidth(140)
+        vol_l.addWidget(vol_icon)
+        vol_l.addWidget(self.vol_slider)
+        self.ctrl_toolbar.addWidget(vol_wrap)
 
-        self.events_btn = QtWidgets.QPushButton("Events")
-        self.events_btn.clicked.connect(self._show_events_panel)
+        self.mute_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaVolumeMuted), "Mute")
+        self.mute_action.setCheckable(True)
+        self.mute_action.setToolTip("Mute")
+        self.mute_action.toggled.connect(self._on_mute_toggled)
 
-        self.event_settings_btn = QtWidgets.QPushButton("Event Settings")
-        self.event_settings_btn.clicked.connect(self._show_event_settings)
+        self.fill_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton), "Fill")
+        self.fill_action.setCheckable(True)
+        self.fill_action.setChecked(True)
+        self.fill_action.setToolTip("Fill window (no black bars). Uncheck to fit full frame (letterbox).")
+        self.fill_action.toggled.connect(lambda _checked: self._apply_zoom())
 
-        self.cam_event_settings_btn = QtWidgets.QPushButton("Cam Event Settings")
-        self.cam_event_settings_btn.clicked.connect(self._show_camera_event_settings)
+        self.ctrl_toolbar.addSeparator()
+
+        self.zoom_out_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft), "Zoom out")
+        self.zoom_out_action.setToolTip("Zoom out")
+        self.zoom_out_action.triggered.connect(self._zoom_out)
+
+        self.zoom_reset_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload), "Reset zoom")
+        self.zoom_reset_action.setToolTip("Reset zoom (1:1)")
+        self.zoom_reset_action.triggered.connect(self._zoom_reset)
+
+        self.zoom_in_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowRight), "Zoom in")
+        self.zoom_in_action.setToolTip("Zoom in")
+        self.zoom_in_action.triggered.connect(self._zoom_in)
+
+        self.ctrl_toolbar.addSeparator()
+
+        self.event_rec_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaPlay), "Event Recording")
+        self.event_rec_action.setCheckable(True)
+        self.event_rec_action.setToolTip("Event Recording (auto clips on motion/person)")
+        self.event_rec_action.toggled.connect(self._on_event_recording_toggled)
+
+        self.event_settings_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView), "Event Settings")
+        self.event_settings_action.setToolTip("Event Settings (global)")
+        self.event_settings_action.triggered.connect(self._show_event_settings)
+
+        self.cam_event_settings_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView), "Cam Event Settings")
+        self.cam_event_settings_action.setToolTip("Cam Event Settings (per camera)")
+        self.cam_event_settings_action.triggered.connect(self._show_camera_event_settings)
+
+        self.recordings_folder_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon), "Recordings Folder")
+        self.recordings_folder_action.setToolTip("Pick/Open recordings folder")
+        self.recordings_folder_action.triggered.connect(self._choose_recordings_folder)
+
+        self.events_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView), "Events")
+        self.events_action.setToolTip("Events list / topics")
+        self.events_action.triggered.connect(self._show_events_panel)
+
+        self.ctrl_toolbar.addSeparator()
+
+        # NOTE: SP_MediaRecord is not available on all Qt versions; fall back gracefully.
+        self.record_action = self.ctrl_toolbar.addAction(
+            _ico_any(
+                getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaRecord", None),
+                getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogSaveButton", None),
+                getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogApplyButton", None),
+            ),
+            "Start Recording",
+        )
+        self.record_action.setCheckable(True)
+        self.record_action.setToolTip("Start/Stop manual recording (selected camera)")
+        self.record_action.toggled.connect(self._on_record_toggled)
 
         self._event_rec_seq: int = 0
         self._event_recording_active: bool = False
@@ -894,36 +978,59 @@ class MainWindow(QtWidgets.QMainWindow):
         self._ptz_hold_timer.setInterval(250)
         self._ptz_hold_timer.timeout.connect(self._ptz_hold_tick)
 
-        self.zoom_out_btn = QtWidgets.QPushButton("Zoom-")
-        self.zoom_reset_btn = QtWidgets.QPushButton("Zoom 1:1")
-        self.zoom_in_btn = QtWidgets.QPushButton("Zoom+")
-        self.zoom_out_btn.clicked.connect(self._zoom_out)
-        self.zoom_reset_btn.clicked.connect(self._zoom_reset)
-        self.zoom_in_btn.clicked.connect(self._zoom_in)
-
-        self.fill_chk = QtWidgets.QCheckBox("Fill")
-        self.fill_chk.setChecked(True)
-        self.fill_chk.setToolTip("Fill window (no black bars). Uncheck to fit full frame (letterbox).")
-        self.fill_chk.toggled.connect(lambda _checked: self._apply_zoom())
-
         # PTZ controls (minimal)
         self.ptz_group = QtWidgets.QGroupBox("PTZ (ONVIF)")
         self.ptz_status = QtWidgets.QLabel("PTZ: disabled")
-        self.ptz_diag = QtWidgets.QPushButton("PTZ Diagnostics")
-        self.ptz_up = QtWidgets.QPushButton("↑")
-        self.ptz_down = QtWidgets.QPushButton("↓")
-        self.ptz_left = QtWidgets.QPushButton("←")
-        self.ptz_right = QtWidgets.QPushButton("→")
-        self.ptz_stop = QtWidgets.QPushButton("Stop")
+        self.ptz_diag = QtWidgets.QToolButton()
+        self.ptz_diag.setText("Diag")
+        self.ptz_diag.setIcon(_ico(QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation))
+        self.ptz_diag.setToolTip("PTZ Diagnostics")
 
-        grid = QtWidgets.QGridLayout(self.ptz_group)
-        grid.addWidget(self.ptz_status, 0, 0, 1, 2)
-        grid.addWidget(self.ptz_diag, 0, 2)
-        grid.addWidget(self.ptz_up, 1, 1)
-        grid.addWidget(self.ptz_left, 2, 0)
-        grid.addWidget(self.ptz_stop, 2, 1)
-        grid.addWidget(self.ptz_right, 2, 2)
-        grid.addWidget(self.ptz_down, 3, 1)
+        # Compact D-pad buttons
+        self.ptz_up = QtWidgets.QToolButton()
+        self.ptz_down = QtWidgets.QToolButton()
+        self.ptz_left = QtWidgets.QToolButton()
+        self.ptz_right = QtWidgets.QToolButton()
+        self.ptz_stop = QtWidgets.QToolButton()
+
+        for b, txt, tip in (
+            (self.ptz_up, "▲", "PTZ Up"),
+            (self.ptz_down, "▼", "PTZ Down"),
+            (self.ptz_left, "◀", "PTZ Left"),
+            (self.ptz_right, "▶", "PTZ Right"),
+            (self.ptz_stop, "■", "PTZ Stop"),
+        ):
+            b.setText(txt)
+            b.setToolTip(tip)
+            b.setAutoRaise(True)
+            b.setObjectName("ptzPadButton")
+            b.setFixedSize(44, 44)
+            b.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+
+        self.ptz_stop.setObjectName("ptzPadStop")
+        self.ptz_stop.setFixedSize(48, 48)
+
+        ptz_layout = QtWidgets.QVBoxLayout(self.ptz_group)
+        ptz_layout.setContentsMargins(10, 10, 10, 10)
+        ptz_layout.setSpacing(8)
+
+        ptz_head = QtWidgets.QHBoxLayout()
+        ptz_head.setContentsMargins(0, 0, 0, 0)
+        ptz_head.addWidget(self.ptz_status, 1)
+        ptz_head.addWidget(self.ptz_diag, 0)
+        ptz_layout.addLayout(ptz_head)
+
+        pad_wrap = QtWidgets.QWidget()
+        pad = QtWidgets.QGridLayout(pad_wrap)
+        pad.setContentsMargins(0, 0, 0, 0)
+        pad.setSpacing(8)
+        pad.addWidget(self.ptz_up, 0, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
+        pad.addWidget(self.ptz_left, 1, 0, QtCore.Qt.AlignmentFlag.AlignCenter)
+        pad.addWidget(self.ptz_stop, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
+        pad.addWidget(self.ptz_right, 1, 2, QtCore.Qt.AlignmentFlag.AlignCenter)
+        pad.addWidget(self.ptz_down, 2, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
+        ptz_layout.addWidget(pad_wrap, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)
+        self.ptz_group.setMaximumHeight(190)
 
         # PTZ: trimite comenzi repetate cât timp butonul e ținut apăsat (mai robust decât o singură comandă).
         self.ptz_up.pressed.connect(lambda: self._ptz_begin_hold(0.0, 0.45))
@@ -969,21 +1076,7 @@ class MainWindow(QtWidgets.QMainWindow):
         live_layout = QtWidgets.QVBoxLayout(live_panel)
         live_layout.setContentsMargins(0, 0, 0, 0)
 
-        ctrl_row = QtWidgets.QHBoxLayout()
-        ctrl_row.addWidget(QtWidgets.QLabel("Volume"))
-        ctrl_row.addWidget(self.vol_slider, 1)
-        ctrl_row.addWidget(self.mute_chk)
-        ctrl_row.addWidget(self.fill_chk)
-        ctrl_row.addWidget(self.zoom_out_btn)
-        ctrl_row.addWidget(self.zoom_reset_btn)
-        ctrl_row.addWidget(self.zoom_in_btn)
-        ctrl_row.addWidget(self.event_rec_chk)
-        ctrl_row.addWidget(self.event_settings_btn)
-        ctrl_row.addWidget(self.cam_event_settings_btn)
-        ctrl_row.addWidget(self.rec_dir_btn)
-        ctrl_row.addWidget(self.events_btn)
-        ctrl_row.addWidget(self.record_btn)
-        live_layout.addLayout(ctrl_row)
+        live_layout.addWidget(self.ctrl_toolbar)
         live_layout.addWidget(self.ptz_group)
 
         events_panel = QtWidgets.QWidget()
@@ -1055,10 +1148,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._last_onvif_topics_by_cam: dict[str, list[str]] = {}
         self._last_onvif_topics_ts_by_cam: dict[str, float] = {}
+        self._onvif_events_last_poll_ts_by_cam: dict[str, float] = {}
+        self._onvif_events_last_ok_ts_by_cam: dict[str, float] = {}
+        self._onvif_events_last_error_by_cam: dict[str, str] = {}
         self._topics_refresh_timer = QtCore.QTimer(self)
         self._topics_refresh_timer.setInterval(750)
         self._topics_refresh_timer.timeout.connect(self._refresh_topics_view)
         self._topics_refresh_timer.start()
+
+        # Restore persisted Event Recording checkbox state after UI is fully wired.
+        try:
+            if bool(getattr(self._settings, "event_recording_enabled", False)):
+                QtCore.QTimer.singleShot(0, lambda: self.event_rec_action.setChecked(True))
+        except Exception:
+            pass
 
     def _ensure_tray(self) -> None:
         try:
@@ -1149,6 +1252,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _invoke_ui(self, fn: object) -> None:
         try:
+            if self._closing:
+                return
             if callable(fn):
                 fn()
         except Exception:
@@ -1156,6 +1261,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         logger.info("Closing application...")
+        self._closing = True
         try:
             self._ptz_worker_stop.set()
             self._ptz_worker_evt.set()
@@ -1172,14 +1278,21 @@ class MainWindow(QtWidgets.QMainWindow):
             # Ensure background event threads can exit without touching Qt objects.
             self._event_recording_enabled = False
             self._event_rec_seq += 1
-            self._stop_event_recording()
-            self._stop_rolling_segments()
+            # Stop rolling/event flags without blocking UI thread.
+            self._rolling_active = False
+            self._roll_seq += 1
+            self._event_recording_active = False
+            try:
+                self._event_active_by_cam.clear()
+            except Exception:
+                pass
         except Exception as e:
             logger.error(f"Error stopping event recording: {e}")
         
         try:
             logger.debug("Stopping player...")
-            self._stop_player()
+            # Stop/release VLC objects in background to avoid blocking the UI thread on exit.
+            threading.Thread(target=self._shutdown_vlc_background, daemon=True).start()
         except Exception as e:
             logger.error(f"Error stopping player: {e}")
         
@@ -1188,6 +1301,65 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Forțează ieșirea dacă există thread-uri blocate
         QtCore.QTimer.singleShot(1000, lambda: sys.exit(0))
+
+    def _shutdown_vlc_background(self) -> None:
+        # IMPORTANT: do not touch Qt widgets here.
+        try:
+            # Stop event recorders
+            try:
+                if self._event_clip_recorder is not None:
+                    self._event_clip_recorder.stop()
+            except Exception:
+                pass
+            try:
+                for r in list(self._event_clip_recorders_by_cam.values()):
+                    try:
+                        r.stop()
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+
+            # Stop rolling recorders
+            try:
+                for r in list(self._rolling_recorders.values()):
+                    try:
+                        r.stop()
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+
+            # Release instances
+            try:
+                if self._event_clip_recorder is not None:
+                    self._event_clip_recorder.release()
+            except Exception:
+                pass
+            try:
+                for r in list(self._event_clip_recorders_by_cam.values()):
+                    try:
+                        r.release()
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+            try:
+                for r in list(self._rolling_recorders.values()):
+                    try:
+                        r.release()
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+
+            # Stop/release main player last
+            try:
+                self._stop_player()
+            except Exception:
+                pass
+        except Exception:
+            return
 
     def _ptz_worker_loop(self) -> None:
         while not self._ptz_worker_stop.is_set():
@@ -1324,7 +1496,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # (Re)bind HWND in case the widget recreated its native handle.
         self._player.set_hwnd(hwnd)
         self._player.audio_set_volume(int(self.vol_slider.value()))
-        self._player.audio_set_mute(bool(self.mute_chk.isChecked()))
+        try:
+            self._player.audio_set_mute(bool(self.mute_action.isChecked()))
+        except Exception:
+            pass
         self._apply_zoom()
 
         # If a camera was selected before the HWND existed, start playback now.
@@ -1413,7 +1588,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self._zoom_apply_retry = 0
 
-        fill = bool(self.fill_chk.isChecked())
+        fill = bool(self.fill_action.isChecked())
         zoom = max(1.0, min(8.0, float(self._zoom_factor)))
 
         base_scale = max(float(vp_w) / float(vw), float(vp_h) / float(vh)) if fill else min(float(vp_w) / float(vw), float(vp_h) / float(vh))
@@ -1621,9 +1796,18 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
     def _recordings_dir(self) -> Path:
-        if self._settings.recordings_dir:
-            return Path(self._settings.recordings_dir)
-        return self._base_dir / "data" / "recordings"
+        # Always ensure the directory exists so background recorders can write immediately.
+        try:
+            p = Path(self._settings.recordings_dir) if self._settings.recordings_dir else (self._base_dir / "data" / "recordings")
+            p.mkdir(parents=True, exist_ok=True)
+            return p
+        except Exception:
+            p = self._base_dir / "data" / "recordings"
+            try:
+                p.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            return p
 
     def _choose_recordings_folder(self) -> None:
         cur = self._settings.recordings_dir or str(self._recordings_dir())
@@ -1736,6 +1920,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self._rolling_recorders = {}
 
     def _on_event_recording_toggled(self, enabled: bool) -> None:
+        # Persist UI state so it survives restarts.
+        try:
+            self._settings.event_recording_enabled = bool(enabled)
+            save_settings(self._base_dir, self._settings)
+        except Exception:
+            pass
+
         self._event_rec_seq += 1
         seq = self._event_rec_seq
         self._event_recording_enabled = bool(enabled)
@@ -1745,8 +1936,24 @@ class MainWindow(QtWidgets.QMainWindow):
             self._stop_rolling_segments()
             return
 
-        # Always start rolling segments for ALL cameras as a guarantee.
-        self._start_rolling_segments()
+        # If both motion+person are disabled globally, nothing can trigger.
+        try:
+            if not bool(getattr(self._settings, "detect_motion", True)) and not bool(getattr(self._settings, "detect_person", True)):
+                QtWidgets.QMessageBox.information(
+                    self,
+                    "Event Recording",
+                    "Detect Motion și Detect Person sunt ambele dezactivate în Event Settings.\n"
+                    "Nu există niciun trigger posibil pentru Event Recording.",
+                )
+                try:
+                    self.event_rec_action.blockSignals(True)
+                    self.event_rec_action.setChecked(False)
+                finally:
+                    self.event_rec_action.blockSignals(False)
+                self._event_recording_enabled = False
+                return
+        except Exception:
+            pass
 
         cams = list(self.cameras)
         any_onvif = any(bool(c.onvif_port and c.host and c.password_dpapi_b64) for c in cams)
@@ -1755,9 +1962,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 self,
                 "Event Recording",
                 "ONVIF Events nu este configurat pe nicio cameră (port/cred).\n"
-                "Activez fallback: înregistrare continuă pe segmente (rolling clips) pentru toate camerele.",
+                "Event Recording funcționează doar pe baza evenimentelor (motion/person) și nu pornește înregistrare continuă.",
             )
+            try:
+                self.event_rec_action.blockSignals(True)
+                self.event_rec_action.setChecked(False)
+            finally:
+                self.event_rec_action.blockSignals(False)
+            self._event_recording_enabled = False
             return
+
+        # Reset per-camera status so the UI reflects current run.
+        try:
+            for c in cams:
+                self._onvif_events_last_poll_ts_by_cam.pop(c.id, None)
+                self._onvif_events_last_ok_ts_by_cam.pop(c.id, None)
+                self._onvif_events_last_error_by_cam.pop(c.id, None)
+        except Exception:
+            pass
 
         def run_for_cam(cam: Camera) -> None:
             if not cam.onvif_port or not cam.host or not cam.password_dpapi_b64:
@@ -1792,6 +2014,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception:
                     signals = []
 
+                # Update status (poll timestamps + last error) even if no topics were extracted.
+                try:
+                    self._onvif_events_last_poll_ts_by_cam[cam.id] = time.time()
+                    err = getattr(puller, "last_error", None)
+                    if err:
+                        self._onvif_events_last_error_by_cam[cam.id] = str(err)
+                    else:
+                        self._onvif_events_last_error_by_cam.pop(cam.id, None)
+                        self._onvif_events_last_ok_ts_by_cam[cam.id] = time.time()
+                except Exception:
+                    pass
+
                 if signals:
                     try:
                         self._last_onvif_topics_by_cam[cam.id] = [str(s) for s in signals]
@@ -1809,6 +2043,28 @@ class MainWindow(QtWidgets.QMainWindow):
                     low_signals = [s.lower() for s in signals]
                     low = "\n".join(low_signals)
 
+                    # Parse "name=value" signals for reliable booleans.
+                    items: dict[str, str] = {}
+                    for s in low_signals:
+                        if "=" in s:
+                            name, val = s.split("=", 1)
+                            name = name.strip()
+                            val = val.strip()
+                            if name:
+                                items[name] = val
+
+                    def _is_true(v: str | None) -> bool:
+                        if v is None:
+                            return False
+                        v = str(v).strip().lower()
+                        return v in ("true", "1", "yes", "y", "on")
+
+                    def _any_true(keys: tuple[str, ...]) -> bool:
+                        for k in keys:
+                            if _is_true(items.get(k)):
+                                return True
+                        return False
+
                     # Determine event kind and apply user filters.
                     default_person = bool(getattr(self._settings, "detect_person", True))
                     default_motion = bool(getattr(self._settings, "detect_motion", True))
@@ -1818,8 +2074,23 @@ class MainWindow(QtWidgets.QMainWindow):
                     person_kw = [k.lower() for k in list(getattr(cam, "event_person_keywords", ()) or ())]
                     motion_kw = [k.lower() for k in list(getattr(cam, "event_motion_keywords", ()) or ())]
 
-                    has_person = any(("person" in s or "people" in s or "human" in s) for s in low_signals) or ("person" in low) or ("human" in low)
-                    has_motion = any(("motion" in s) for s in low_signals) or ("motion" in low) or ("cellmotiondetector" in low)
+                    # "Hard" positives based on boolean data items (preferred).
+                    person_items_true = _any_true(("people", "person", "human", "isperson", "ispeople", "ishuman"))
+                    motion_items_true = _any_true(
+                        (
+                            "ismotion",
+                            "motion",
+                            "ismotiondetected",
+                            "motiondetected",
+                            "motiondetect",
+                            "ismotionalarm",
+                            "motionalarm",
+                        )
+                    )
+
+                    # "Soft" positives based on topic / text (fallback; camera-specific).
+                    has_person = person_items_true or ("person" in low) or ("people" in low) or ("human" in low)
+                    has_motion = motion_items_true or ("cellmotiondetector" in low) or ("motionalarm" in low) or ("motion" in low)
                     if person_kw:
                         has_person = has_person or any(any(k in s for k in person_kw) for s in low_signals)
                     if motion_kw:
@@ -1833,32 +2104,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         time.sleep(1)
                         continue
 
-                    item_hits = False
-                    for s in low_signals:
-                        if "=" in s:
-                            name, val = s.split("=", 1)
-                            name = name.strip()
-                            val = val.strip()
-                            if val in ("true", "1", "yes") and name in (
-                                "ismotion",
-                                "motion",
-                                "people",
-                                "person",
-                                "human",
-                                "tamper",
-                            ):
-                                item_hits = True
-                                break
+                    item_hits = motion_items_true or person_items_true or _any_true(("tamper",))
 
-                    topic_hits = (
-                        ("cellmotiondetector" in low)
-                        or ("motion" in low and "detector" in low)
-                        or ("ruleengine" in low and "motion" in low)
-                        or ("person" in low)
-                        or ("human" in low)
-                    )
-
-                    if item_hits or topic_hits:
+                    # Trigger if we have any plausible motion/person signal (camera-specific topics vary a lot).
+                    if item_hits or has_person or has_motion:
                         now = time.monotonic()
                         cooldown = float(
                             self._effective_event_int(
@@ -1870,11 +2119,15 @@ class MainWindow(QtWidgets.QMainWindow):
                         if now - last_trigger_ts > max(5.0, cooldown):
                             last_trigger_ts = now
                             topics = list(signals)
+                            try:
+                                logger.info("ONVIF event trigger: cam='%s' kind=%s topics=%d", cam.name, kind, len(topics))
+                            except Exception:
+                                pass
                             self._ui_bridge.invoke.emit(
                                 lambda c=cam, k=kind, t=topics: self._trigger_event_recording_for_camera(c, kind=k, topics=t)
                             )
 
-                time.sleep(1)
+                time.sleep(0.25)
 
         for cam in cams:
             threading.Thread(target=lambda c=cam: run_for_cam(c), daemon=True).start()
@@ -1936,8 +2189,24 @@ class MainWindow(QtWidgets.QMainWindow):
             except Exception:
                 pass
             return
+        # Show effective filters for the selected camera (global defaults + per-camera overrides).
+        try:
+            default_person = bool(getattr(self._settings, "detect_person", True))
+            default_motion = bool(getattr(self._settings, "detect_motion", True))
+            want_person = self._effective_event_bool(cam, "event_detect_person", default_person)
+            want_motion = self._effective_event_bool(cam, "event_detect_motion", default_motion)
+            person_kw = list(getattr(cam, "event_person_keywords", ()) or ())
+            motion_kw = list(getattr(cam, "event_motion_keywords", ()) or ())
+        except Exception:
+            want_person = True
+            want_motion = True
+            person_kw = []
+            motion_kw = []
         topics = self._last_onvif_topics_by_cam.get(cam.id) or []
         ts = self._last_onvif_topics_ts_by_cam.get(cam.id)
+        poll_ts = self._onvif_events_last_poll_ts_by_cam.get(cam.id)
+        ok_ts = self._onvif_events_last_ok_ts_by_cam.get(cam.id)
+        err = self._onvif_events_last_error_by_cam.get(cam.id)
         head = ""
         if ts:
             try:
@@ -1945,13 +2214,40 @@ class MainWindow(QtWidgets.QMainWindow):
             except Exception:
                 head = ""
         lines = []
+        # Status header
+        if err:
+            lines.append(f"Events status: FAILED ({err})")
+        elif ok_ts:
+            try:
+                ok_h = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(ok_ts)))
+            except Exception:
+                ok_h = ""
+            lines.append(f"Events status: OK (last poll: {ok_h})" if ok_h else "Events status: OK")
+        elif self._event_recording_enabled:
+            lines.append("Events status: connecting...")
+        else:
+            lines.append("Events status: idle (Event Recording is OFF)")
+        if poll_ts:
+            try:
+                poll_h = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(poll_ts)))
+            except Exception:
+                poll_h = ""
+            if poll_h:
+                lines.append(f"Last HTTP poll attempt: {poll_h}")
+        lines.append("")
+        lines.append(f"Filters: motion={'ON' if want_motion else 'OFF'} | person={'ON' if want_person else 'OFF'}")
+        if motion_kw:
+            lines.append(f"Motion keywords: {', '.join(motion_kw)}")
+        if person_kw:
+            lines.append(f"Person keywords: {', '.join(person_kw)}")
+        lines.append("")
         if head:
-            lines.append(f"Last update: {head}")
+            lines.append(f"Last topics update: {head}")
             lines.append("")
         if topics:
             lines.extend(list(topics)[-200:])
         else:
-            lines.append("No topics yet. Enable Event Recording and wait for camera events.")
+            lines.append("No topics extracted yet. Trigger motion/person on the camera to see events.")
         try:
             self.topics_text.setPlainText("\n".join(lines))
         except Exception:
@@ -2059,6 +2355,7 @@ class MainWindow(QtWidgets.QMainWindow):
             rec.stop()
             rec.play(cam.effective_rtsp_url(), record_to=out)
         except Exception:
+            logger.exception("Event recording failed for camera '%s' -> %s", cam.name, str(out))
             self._event_active_by_cam.discard(cam.id)
             return
 
@@ -2148,14 +2445,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if enabled:
             if self._current_camera is None:
                 QtWidgets.QMessageBox.information(self, "Recording", "Selectează o cameră înainte.")
-                self.record_btn.setChecked(False)
+                self.record_action.setChecked(False)
                 return
             ts = time.strftime("%Y%m%d_%H%M%S")
             safe_name = "".join(ch if ch.isalnum() or ch in ("-", "_", ".") else "_" for ch in self._current_camera.name)
             out = self._recordings_dir() / f"{safe_name}_{ts}.ts"
             self._recording = True
             self._record_path = out
-            self.record_btn.setText("Stop Recording")
+            self.record_action.setText("Stop Recording")
             # restart playback with recording enabled
             self._play_camera(self._current_camera)
             QtWidgets.QMessageBox.information(self, "Recording", f"Recording to:\n{out}")
@@ -2164,7 +2461,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             self._recording = False
             self._record_path = None
-            self.record_btn.setText("Start Recording")
+            self.record_action.setText("Start Recording")
             if self._current_camera is not None:
                 self._play_camera(self._current_camera)
 
@@ -2428,7 +2725,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self._ptz_diag_seq != seq:
                 return
             self.ptz_diag.setEnabled(True)
-            self.ptz_diag.setText("PTZ Diagnostics")
+            self.ptz_diag.setText("Diag")
             self.ptz_status.setText("PTZ: diagnostics timeout")
 
         QtCore.QTimer.singleShot(9000, on_timeout)
@@ -2452,7 +2749,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self._current_camera is None or self._current_camera.id != cam.id:
                     return
                 self.ptz_diag.setEnabled(True)
-                self.ptz_diag.setText("PTZ Diagnostics")
+                self.ptz_diag.setText("Diag")
                 if "error" in rep:
                     self.ptz_status.setText("PTZ: diagnostics error")
                     QtWidgets.QMessageBox.information(self, "PTZ Diagnostics", f"Error: {rep.get('error')}")
@@ -2651,6 +2948,19 @@ class MainWindow(QtWidgets.QMainWindow):
 def main() -> int:
     app = QtWidgets.QApplication(sys.argv)
     base_dir = Path(__file__).resolve().parents[1]
+
+    # Consistent desktop look + dark theme.
+    try:
+        app.setStyle("Fusion")
+    except Exception:
+        pass
+    try:
+        qss_path = Path(__file__).resolve().parent / "theme.qss"
+        if qss_path.exists():
+            app.setStyleSheet(qss_path.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+
     w = MainWindow(base_dir)
     w.show()
     return app.exec()

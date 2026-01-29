@@ -42,6 +42,8 @@ def _soap_create_pullpoint_subscription() -> str:
 """
 
 
+# NOTE: PullMessages is usually a "long poll". The camera may hold the HTTP response
+# until the requested Timeout elapses. Keep our HTTP read-timeout > PullMessages Timeout.
 def _soap_pull_messages(timeout: str = "PT5S", limit: int = 10) -> str:
     return f"""<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:tev=\"http://www.onvif.org/ver10/events/wsdl\">
@@ -95,14 +97,11 @@ def _extract_subscription_reference(create_xml: str) -> str | None:
 
 def _extract_topics(pull_xml: str) -> list[str]:
     topics: list[str] = []
-    try:
-        root = ET.fromstring(pull_xml)
-    except Exception:
-        return topics
+    root = ET.fromstring(pull_xml)
 
     for el in root.iter():
         if _strip_ns(el.tag) == "Topic":
-            txt = (el.text or "").strip()
+            txt = ("".join(el.itertext()) or "").strip()
             if txt:
                 topics.append(txt)
 
@@ -124,7 +123,9 @@ class OnvifEventPuller:
         self._cfg = cfg
         self._session = requests.Session()
         self._session.verify = False
-        self._timeout = (1.0, 2.0)
+        # (connect timeout, read timeout)
+        # Read timeout must be > PullMessages Timeout to avoid spurious timeouts.
+        self._timeout = (2.0, 8.0)
         self._auth_digest = HTTPDigestAuth(cfg.username, cfg.password)
         self._auth_basic = HTTPBasicAuth(cfg.username, cfg.password)
 
@@ -136,6 +137,7 @@ class OnvifEventPuller:
         self._sub_url: str | None = None
         self._last_init_ts: float = 0.0
         self.last_error: str | None = None
+        self.last_pull_xml: str | None = None
 
     def _post(self, url: str, xml: str, action: str) -> str | None:
         # Some cameras require SOAP 1.1 (text/xml + SOAPAction) instead of SOAP 1.2.
@@ -221,9 +223,15 @@ class OnvifEventPuller:
             return []
         assert self._sub_url is not None
 
-        pull_xml = self._post(self._sub_url, _soap_pull_messages(), "PullMessages")
+        pull_xml = self._post(self._sub_url, _soap_pull_messages(timeout="PT5S", limit=10), "PullMessages")
         if not pull_xml:
             # force re-init next time
             self._sub_url = None
             return []
-        return _extract_topics(pull_xml)
+        self.last_pull_xml = pull_xml
+        try:
+            return _extract_topics(pull_xml)
+        except Exception as e:
+            # Keep HTTP OK but surface parsing problems to the caller.
+            self.last_error = f"Parse error: {e.__class__.__name__}: {e}"
+            return []
