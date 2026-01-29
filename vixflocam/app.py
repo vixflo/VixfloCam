@@ -32,6 +32,7 @@ from vixflocam.storage import Camera, load_cameras, save_cameras
 from vixflocam.vlc_player import VlcPlayer
 from vixflocam.onvif_events import OnvifEventConfig, OnvifEventPuller
 from vixflocam.onvif_ptz import OnvifConfig, OnvifPtzClient, detect_onvif_port, diagnose_onvif
+from vixflocam.events_store import EventEntry, append_event, load_events, now_ts
 
 
 class AddCameraDialog(QtWidgets.QDialog):
@@ -234,6 +235,158 @@ class _VlcEventBridge(QtCore.QObject):
 
 class _UiInvokeBridge(QtCore.QObject):
     invoke = QtCore.Signal(object)
+
+
+class EventSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, parent: QtWidgets.QWidget | None, settings: AppSettings):
+        super().__init__(parent)
+        self.setWindowTitle("Event Settings")
+        self.setModal(True)
+
+        self.motion_chk = QtWidgets.QCheckBox("Detect motion")
+        self.person_chk = QtWidgets.QCheckBox("Detect person")
+        self.notify_chk = QtWidgets.QCheckBox("Desktop notifications")
+
+        self.motion_chk.setChecked(bool(settings.detect_motion))
+        self.person_chk.setChecked(bool(settings.detect_person))
+        self.notify_chk.setChecked(bool(settings.desktop_notifications))
+
+        self.record_secs = QtWidgets.QSpinBox()
+        self.record_secs.setRange(10, 300)
+        self.record_secs.setValue(int(getattr(settings, "event_record_seconds", 60) or 60))
+        self.record_secs.setSuffix(" s")
+
+        self.cooldown_secs = QtWidgets.QSpinBox()
+        self.cooldown_secs.setRange(5, 300)
+        self.cooldown_secs.setValue(int(getattr(settings, "event_cooldown_seconds", 20) or 20))
+        self.cooldown_secs.setSuffix(" s")
+
+        form = QtWidgets.QFormLayout()
+        form.addRow(self.motion_chk)
+        form.addRow(self.person_chk)
+        form.addRow(self.notify_chk)
+        form.addRow("Record duration", self.record_secs)
+        form.addRow("Cooldown", self.cooldown_secs)
+
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addLayout(form)
+        layout.addWidget(buttons)
+
+    def updated_settings(self, base: AppSettings) -> AppSettings:
+        base.detect_motion = bool(self.motion_chk.isChecked())
+        base.detect_person = bool(self.person_chk.isChecked())
+        base.desktop_notifications = bool(self.notify_chk.isChecked())
+        base.event_record_seconds = int(self.record_secs.value())
+        base.event_cooldown_seconds = int(self.cooldown_secs.value())
+        return base
+
+
+class CameraEventSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, parent: QtWidgets.QWidget | None, cam: Camera, defaults: AppSettings):
+        super().__init__(parent)
+        self.setWindowTitle(f"Event Settings - {cam.name}")
+        self.setModal(True)
+        self._cam = cam
+        self._defaults = defaults
+
+        def _label(val: object, fallback: object) -> str:
+            return f"(default {fallback})" if val is None else "(override)"
+
+        self.motion_chk = QtWidgets.QCheckBox(f"Detect motion {_label(cam.event_detect_motion, defaults.detect_motion)}")
+        self.person_chk = QtWidgets.QCheckBox(f"Detect person {_label(cam.event_detect_person, defaults.detect_person)}")
+        self.notify_chk = QtWidgets.QCheckBox(
+            f"Desktop notifications {_label(cam.event_desktop_notifications, defaults.desktop_notifications)}"
+        )
+
+        self.motion_chk.setChecked(bool(defaults.detect_motion if cam.event_detect_motion is None else cam.event_detect_motion))
+        self.person_chk.setChecked(bool(defaults.detect_person if cam.event_detect_person is None else cam.event_detect_person))
+        self.notify_chk.setChecked(
+            bool(defaults.desktop_notifications if cam.event_desktop_notifications is None else cam.event_desktop_notifications)
+        )
+
+        self.record_secs = QtWidgets.QSpinBox()
+        self.record_secs.setRange(10, 300)
+        rec = defaults.event_record_seconds if cam.event_record_seconds is None else cam.event_record_seconds
+        self.record_secs.setValue(int(rec or 60))
+        self.record_secs.setSuffix(" s")
+
+        self.cooldown_secs = QtWidgets.QSpinBox()
+        self.cooldown_secs.setRange(5, 300)
+        cd = defaults.event_cooldown_seconds if cam.event_cooldown_seconds is None else cam.event_cooldown_seconds
+        self.cooldown_secs.setValue(int(cd or 20))
+        self.cooldown_secs.setSuffix(" s")
+
+        self.motion_kw = QtWidgets.QLineEdit()
+        self.motion_kw.setPlaceholderText("e.g. motion, cellmotiondetector, ismotion=true")
+        self.motion_kw.setText(", ".join(list(cam.event_motion_keywords or ())))
+
+        self.person_kw = QtWidgets.QLineEdit()
+        self.person_kw.setPlaceholderText("e.g. person, human, people")
+        self.person_kw.setText(", ".join(list(cam.event_person_keywords or ())))
+
+        self.clear_overrides_btn = QtWidgets.QPushButton("Clear Overrides (use global defaults)")
+        self.clear_overrides_btn.clicked.connect(self._clear_overrides)
+
+        form = QtWidgets.QFormLayout()
+        form.addRow(self.motion_chk)
+        form.addRow(self.person_chk)
+        form.addRow(self.notify_chk)
+        form.addRow("Record duration", self.record_secs)
+        form.addRow("Cooldown", self.cooldown_secs)
+        form.addRow("Motion keywords", self.motion_kw)
+        form.addRow("Person keywords", self.person_kw)
+
+        buttons = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addLayout(form)
+        layout.addWidget(self.clear_overrides_btn)
+        layout.addWidget(buttons)
+
+    def _clear_overrides(self) -> None:
+        self.motion_chk.setChecked(bool(self._defaults.detect_motion))
+        self.person_chk.setChecked(bool(self._defaults.detect_person))
+        self.notify_chk.setChecked(bool(self._defaults.desktop_notifications))
+        self.record_secs.setValue(int(self._defaults.event_record_seconds or 60))
+        self.cooldown_secs.setValue(int(self._defaults.event_cooldown_seconds or 20))
+        self.motion_kw.setText("")
+        self.person_kw.setText("")
+
+    @staticmethod
+    def _parse_keywords(text: str) -> tuple[str, ...]:
+        parts = [p.strip() for p in (text or "").replace(";", ",").split(",")]
+        return tuple([p for p in parts if p])
+
+    def updated_camera(self) -> Camera:
+        # Always store explicit values (override); user can Clear Overrides to reset.
+        return Camera(
+            id=self._cam.id,
+            name=self._cam.name,
+            host=self._cam.host,
+            username=self._cam.username,
+            password_dpapi_b64=self._cam.password_dpapi_b64,
+            port=self._cam.port,
+            path=self._cam.path,
+            rtsp_url=self._cam.rtsp_url,
+            onvif_port=self._cam.onvif_port,
+            event_detect_motion=bool(self.motion_chk.isChecked()),
+            event_detect_person=bool(self.person_chk.isChecked()),
+            event_record_seconds=int(self.record_secs.value()),
+            event_cooldown_seconds=int(self.cooldown_secs.value()),
+            event_desktop_notifications=bool(self.notify_chk.isChecked()),
+            event_motion_keywords=self._parse_keywords(self.motion_kw.text()),
+            event_person_keywords=self._parse_keywords(self.person_kw.text()),
+        )
 
 
 class _WinMouseHook:
@@ -711,6 +864,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.events_btn = QtWidgets.QPushButton("Events")
         self.events_btn.clicked.connect(self._show_events_panel)
 
+        self.event_settings_btn = QtWidgets.QPushButton("Event Settings")
+        self.event_settings_btn.clicked.connect(self._show_event_settings)
+
+        self.cam_event_settings_btn = QtWidgets.QPushButton("Cam Event Settings")
+        self.cam_event_settings_btn.clicked.connect(self._show_camera_event_settings)
+
         self._event_rec_seq: int = 0
         self._event_recording_active: bool = False
         self._event_recording_enabled: bool = False
@@ -802,7 +961,6 @@ class MainWindow(QtWidgets.QMainWindow):
         right = QtWidgets.QWidget()
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.addWidget(self.video_viewport, 1)
 
         # Bottom area: live controls vs events page
         self._right_stack = QtWidgets.QStackedWidget()
@@ -820,6 +978,8 @@ class MainWindow(QtWidgets.QMainWindow):
         ctrl_row.addWidget(self.zoom_reset_btn)
         ctrl_row.addWidget(self.zoom_in_btn)
         ctrl_row.addWidget(self.event_rec_chk)
+        ctrl_row.addWidget(self.event_settings_btn)
+        ctrl_row.addWidget(self.cam_event_settings_btn)
         ctrl_row.addWidget(self.rec_dir_btn)
         ctrl_row.addWidget(self.events_btn)
         ctrl_row.addWidget(self.record_btn)
@@ -847,10 +1007,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.events_list.itemDoubleClicked.connect(lambda _it: self._play_selected_event())
         events_layout.addWidget(self.events_list, 1)
 
+        self.topics_group = QtWidgets.QGroupBox("Live ONVIF Topics (selected camera)")
+        self.topics_text = QtWidgets.QPlainTextEdit()
+        self.topics_text.setReadOnly(True)
+        self.topics_text.setMaximumBlockCount(500)
+        self.topics_hint = QtWidgets.QLabel("Tip: folosește Cam Event Settings pentru cuvinte-cheie per cameră.")
+        tg = QtWidgets.QVBoxLayout(self.topics_group)
+        tg.addWidget(self.topics_text, 1)
+        tg.addWidget(self.topics_hint)
+        events_layout.addWidget(self.topics_group, 0)
+
         self._right_stack.addWidget(live_panel)
         self._right_stack.addWidget(events_panel)
         self._right_stack.setCurrentIndex(0)
-        right_layout.addWidget(self._right_stack, 0)
+
+        # Make the video vs controls area user-resizable (prevents "disproportion" when panels grow).
+        right_splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
+        right_splitter.addWidget(self.video_viewport)
+        right_splitter.addWidget(self._right_stack)
+        right_splitter.setStretchFactor(0, 1)
+        right_splitter.setStretchFactor(1, 0)
+        right_splitter.setChildrenCollapsible(True)
+        try:
+            right_splitter.setSizes([520, 180])
+        except Exception:
+            pass
+        right_layout.addWidget(right_splitter, 1)
 
         splitter = QtWidgets.QSplitter()
         splitter.addWidget(left)
@@ -867,6 +1049,103 @@ class MainWindow(QtWidgets.QMainWindow):
         QtCore.QTimer.singleShot(0, self._ensure_player)
         # start low-level mouse hook after UI is shown
         QtCore.QTimer.singleShot(0, self._start_mouse_hook)
+
+        self._tray: QtWidgets.QSystemTrayIcon | None = None
+        QtCore.QTimer.singleShot(0, self._ensure_tray)
+
+        self._last_onvif_topics_by_cam: dict[str, list[str]] = {}
+        self._last_onvif_topics_ts_by_cam: dict[str, float] = {}
+        self._topics_refresh_timer = QtCore.QTimer(self)
+        self._topics_refresh_timer.setInterval(750)
+        self._topics_refresh_timer.timeout.connect(self._refresh_topics_view)
+        self._topics_refresh_timer.start()
+
+    def _ensure_tray(self) -> None:
+        try:
+            if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
+                return
+        except Exception:
+            return
+
+        if self._tray is None:
+            try:
+                icon = self.windowIcon()
+            except Exception:
+                icon = QtGui.QIcon()
+            self._tray = QtWidgets.QSystemTrayIcon(icon, self)
+            self._tray.setToolTip("VixfloCam")
+            try:
+                self._tray.show()
+            except Exception:
+                pass
+
+        # Respect user setting
+        try:
+            self._tray.setVisible(bool(getattr(self._settings, "desktop_notifications", True)))
+        except Exception:
+            pass
+
+    def _notify_event(self, title: str, message: str) -> None:
+        if not bool(getattr(self._settings, "desktop_notifications", True)):
+            return
+        if self._tray is None:
+            self._ensure_tray()
+        if self._tray is None:
+            return
+        try:
+            self._tray.showMessage(str(title), str(message), QtWidgets.QSystemTrayIcon.MessageIcon.Information, 7000)
+        except Exception:
+            return
+
+    def _notify_event_for_camera(self, cam: Camera, title: str, message: str) -> None:
+        allow = self._effective_event_bool(cam, "event_desktop_notifications", bool(getattr(self._settings, "desktop_notifications", True)))
+        if not allow:
+            return
+        # Keep global master switch, too.
+        if not bool(getattr(self._settings, "desktop_notifications", True)):
+            return
+        self._notify_event(title, message)
+
+    def _show_event_settings(self) -> None:
+        dlg = EventSettingsDialog(self, self._settings)
+        if dlg.exec() != QtWidgets.QDialog.DialogCode.Accepted:
+            return
+        self._settings = dlg.updated_settings(self._settings)
+        save_settings(self._base_dir, self._settings)
+        self._ensure_tray()
+
+    def _show_camera_event_settings(self) -> None:
+        cam = self._current_camera
+        if cam is None:
+            QtWidgets.QMessageBox.information(self, "Event Settings", "Selectează o cameră înainte.")
+            return
+        dlg = CameraEventSettingsDialog(self, cam, self._settings)
+        if dlg.exec() != QtWidgets.QDialog.DialogCode.Accepted:
+            return
+        updated = dlg.updated_camera()
+        # Replace in list + persist.
+        for i, c in enumerate(self.cameras):
+            if c.id == updated.id:
+                self.cameras[i] = updated
+                break
+        save_cameras(self._base_dir, self.cameras)
+        if self._current_camera is not None and self._current_camera.id == updated.id:
+            self._current_camera = updated
+
+    def _effective_event_bool(self, cam: Camera, name: str, default: bool) -> bool:
+        val = getattr(cam, name, None)
+        if val is None:
+            return bool(default)
+        return bool(val)
+
+    def _effective_event_int(self, cam: Camera, name: str, default: int) -> int:
+        val = getattr(cam, name, None)
+        if val is None:
+            return int(default)
+        try:
+            return int(val)
+        except Exception:
+            return int(default)
 
     def _invoke_ui(self, fn: object) -> None:
         try:
@@ -1513,6 +1792,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception:
                     signals = []
 
+                if signals:
+                    try:
+                        self._last_onvif_topics_by_cam[cam.id] = [str(s) for s in signals]
+                        self._last_onvif_topics_ts_by_cam[cam.id] = time.time()
+                    except Exception:
+                        pass
+
                 if not signals and getattr(puller, "last_error", None):
                     time.sleep(1.0)
                     ensure_puller()
@@ -1522,6 +1808,30 @@ class MainWindow(QtWidgets.QMainWindow):
                 if signals:
                     low_signals = [s.lower() for s in signals]
                     low = "\n".join(low_signals)
+
+                    # Determine event kind and apply user filters.
+                    default_person = bool(getattr(self._settings, "detect_person", True))
+                    default_motion = bool(getattr(self._settings, "detect_motion", True))
+                    want_person = self._effective_event_bool(cam, "event_detect_person", default_person)
+                    want_motion = self._effective_event_bool(cam, "event_detect_motion", default_motion)
+
+                    person_kw = [k.lower() for k in list(getattr(cam, "event_person_keywords", ()) or ())]
+                    motion_kw = [k.lower() for k in list(getattr(cam, "event_motion_keywords", ()) or ())]
+
+                    has_person = any(("person" in s or "people" in s or "human" in s) for s in low_signals) or ("person" in low) or ("human" in low)
+                    has_motion = any(("motion" in s) for s in low_signals) or ("motion" in low) or ("cellmotiondetector" in low)
+                    if person_kw:
+                        has_person = has_person or any(any(k in s for k in person_kw) for s in low_signals)
+                    if motion_kw:
+                        has_motion = has_motion or any(any(k in s for k in motion_kw) for s in low_signals)
+
+                    kind = "person" if has_person else ("motion" if has_motion else "unknown")
+                    if kind == "person" and not want_person:
+                        time.sleep(1)
+                        continue
+                    if kind == "motion" and not want_motion:
+                        time.sleep(1)
+                        continue
 
                     item_hits = False
                     for s in low_signals:
@@ -1550,9 +1860,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     if item_hits or topic_hits:
                         now = time.monotonic()
-                        if now - last_trigger_ts > 20.0:
+                        cooldown = float(
+                            self._effective_event_int(
+                                cam,
+                                "event_cooldown_seconds",
+                                int(getattr(self._settings, "event_cooldown_seconds", 20) or 20),
+                            )
+                        )
+                        if now - last_trigger_ts > max(5.0, cooldown):
                             last_trigger_ts = now
-                            QtCore.QTimer.singleShot(0, lambda c=cam: self._trigger_event_recording_for_camera(c))
+                            topics = list(signals)
+                            self._ui_bridge.invoke.emit(
+                                lambda c=cam, k=kind, t=topics: self._trigger_event_recording_for_camera(c, kind=k, topics=t)
+                            )
 
                 time.sleep(1)
 
@@ -1562,6 +1882,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _show_events_panel(self) -> None:
         self._right_stack.setCurrentIndex(1)
         self._refresh_events_list()
+        self._refresh_topics_view()
 
     def _show_live_panel(self) -> None:
         self._right_stack.setCurrentIndex(0)
@@ -1573,24 +1894,68 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _refresh_events_list(self) -> None:
         self.events_list.clear()
+
+        # Prefer structured events if present.
+        evs = load_events(self._base_dir)
+        if evs:
+            for e in evs:
+                try:
+                    ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(e.ts)))
+                except Exception:
+                    ts = "unknown-time"
+                kind = (e.kind or "event").upper()
+                label = f"{ts}  [{kind}]  {e.camera_name}"
+                item = QtWidgets.QListWidgetItem(label)
+                item.setData(QtCore.Qt.ItemDataRole.UserRole, str(e.file or ""))
+                self.events_list.addItem(item)
+            return
+
+        # Fallback: list raw recordings.
         rec_dir = self._recordings_dir()
         if not rec_dir.exists():
             return
-
-        files: list[Path] = []
         try:
             files = sorted(rec_dir.glob("*.ts"), key=lambda p: p.stat().st_mtime, reverse=True)
         except Exception:
             files = []
-
         for p in files:
+            item = QtWidgets.QListWidgetItem(p.name)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, str(p))
+            self.events_list.addItem(item)
+
+    def _refresh_topics_view(self) -> None:
+        try:
+            if getattr(self._right_stack, "currentIndex")() != 1:
+                return
+        except Exception:
+            return
+        cam = self._current_camera
+        if cam is None:
             try:
-                # Display friendly name; keep path as user data.
-                item = QtWidgets.QListWidgetItem(p.name)
-                item.setData(QtCore.Qt.ItemDataRole.UserRole, str(p))
-                self.events_list.addItem(item)
+                self.topics_text.setPlainText("Selectează o cameră pentru a vedea topic-urile.")
             except Exception:
-                continue
+                pass
+            return
+        topics = self._last_onvif_topics_by_cam.get(cam.id) or []
+        ts = self._last_onvif_topics_ts_by_cam.get(cam.id)
+        head = ""
+        if ts:
+            try:
+                head = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(float(ts)))
+            except Exception:
+                head = ""
+        lines = []
+        if head:
+            lines.append(f"Last update: {head}")
+            lines.append("")
+        if topics:
+            lines.extend(list(topics)[-200:])
+        else:
+            lines.append("No topics yet. Enable Event Recording and wait for camera events.")
+        try:
+            self.topics_text.setPlainText("\n".join(lines))
+        except Exception:
+            return
 
     def _play_selected_event(self) -> None:
         item = self.events_list.currentItem()
@@ -1647,13 +2012,34 @@ class MainWindow(QtWidgets.QMainWindow):
             self._event_recording_active = False
             return
 
+        try:
+            entry = EventEntry(
+                ts=now_ts(),
+                camera_id=self._current_camera.id,
+                camera_name=self._current_camera.name,
+                kind="unknown",
+                topics=[],
+                file=str(out),
+            )
+            append_event(self._base_dir, entry)
+        except Exception:
+            pass
+        self._notify_event_for_camera(self._current_camera, "VixfloCam", f"EVENT: {self._current_camera.name}")
+
         if self._event_record_stop_timer is None:
             self._event_record_stop_timer = QtCore.QTimer(self)
             self._event_record_stop_timer.setSingleShot(True)
             self._event_record_stop_timer.timeout.connect(self._stop_event_recording)
-        self._event_record_stop_timer.start(30000)
+        seconds = int(
+            self._effective_event_int(
+                self._current_camera,
+                "event_record_seconds",
+                int(getattr(self._settings, "event_record_seconds", 60) or 60),
+            )
+        )
+        self._event_record_stop_timer.start(max(5000, min(300000, seconds * 1000)))
 
-    def _trigger_event_recording_for_camera(self, cam: Camera) -> None:
+    def _trigger_event_recording_for_camera(self, cam: Camera, *, kind: str = "unknown", topics: list[str] | None = None) -> None:
         # Do not interfere with manual recording of the currently viewed camera.
         if self._recording and self._current_camera is not None and cam.id == self._current_camera.id:
             return
@@ -1676,7 +2062,34 @@ class MainWindow(QtWidgets.QMainWindow):
             self._event_active_by_cam.discard(cam.id)
             return
 
-        QtCore.QTimer.singleShot(30000, lambda cid=cam.id: self._stop_event_recording_for_camera(cid))
+        # Persist event + notify
+        try:
+            entry = EventEntry(
+                ts=now_ts(),
+                camera_id=cam.id,
+                camera_name=cam.name,
+                kind=str(kind or "unknown"),
+                topics=list(topics or []),
+                file=str(out),
+            )
+            append_event(self._base_dir, entry)
+        except Exception:
+            pass
+
+        try:
+            k = str(kind or "event").upper()
+        except Exception:
+            k = "EVENT"
+        self._notify_event_for_camera(cam, "VixfloCam", f"{k}: {cam.name}")
+
+        seconds = int(
+            self._effective_event_int(
+                cam,
+                "event_record_seconds",
+                int(getattr(self._settings, "event_record_seconds", 60) or 60),
+            )
+        )
+        QtCore.QTimer.singleShot(max(5000, min(300000, seconds * 1000)), lambda cid=cam.id: self._stop_event_recording_for_camera(cid))
 
     def _stop_event_recording_for_camera(self, camera_id: str) -> None:
         if camera_id not in self._event_active_by_cam:

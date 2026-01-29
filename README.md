@@ -7,7 +7,7 @@ Viewer simplu pentru camere IP (ex: TP-Link Tapo) prin RTSP, construit cu **Pyth
 - Windows 10/11
 - Python (deja ai)
 - **VLC Media Player (64-bit)** instalat (necesar pentru librăriile `libvlc`).
-  - Download: https://www.videolan.org/vlc/
+  - Download: <https://www.videolan.org/vlc/>
 
 ## Instalare (dependințe)
 
@@ -35,8 +35,8 @@ C:/xampp/htdocs/vixflodev-ro/VixfloCam/.venv/Scripts/python.exe -m vixflocam
 
 sau direct
 
-```
-.venv/Scripts/python.exe -m vixflocam
+```powershell
+ .venv/Scripts/python.exe -m vixflocam
 ```
 
 Dacă nu vrei calea lungă, merge și:
@@ -48,6 +48,7 @@ Dacă nu vrei calea lungă, merge și:
 ## Adăugare cameră
 
 În aplicație, apasă **Add** și introdu:
+
 - **Name** (un nume pentru cameră)
 - **Host / IP** (ex: `192.168.1.50`)
 - **Username** (dacă ai setat user în Tapo; altfel poate fi gol)
@@ -70,6 +71,7 @@ Notă: pentru Tapo, RTSP trebuie activat din aplicația Tapo (în funcție de fi
 ## Config
 
 Camerele se salvează local în:
+
 - `./data/cameras.json`
 
 Parolele sunt salvate criptat cu Windows DPAPI (legate de user-ul tău Windows).

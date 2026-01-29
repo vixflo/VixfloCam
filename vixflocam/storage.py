@@ -22,6 +22,14 @@ class Camera:
     # Optional: allow storing full URL (legacy/advanced)
     rtsp_url: str = ""
     onvif_port: int = 0
+    # Per-camera event settings (override global AppSettings when not None)
+    event_detect_motion: bool | None = None
+    event_detect_person: bool | None = None
+    event_record_seconds: int | None = None
+    event_cooldown_seconds: int | None = None
+    event_desktop_notifications: bool | None = None
+    event_motion_keywords: tuple[str, ...] = ()
+    event_person_keywords: tuple[str, ...] = ()
 
     def has_structured_config(self) -> bool:
         return bool(self.host and self.password_dpapi_b64)
@@ -74,6 +82,54 @@ def load_cameras(base_dir: Path) -> List[Camera]:
         path = str(item.get("path", "stream1")).strip() or "stream1"
         rtsp_url = str(item.get("rtsp_url", "")).strip()
         onvif_port_raw = item.get("onvif_port", 0)
+
+        # Per-camera event overrides (optional)
+        def as_opt_bool(v: object) -> bool | None:
+            if v is None:
+                return None
+            if isinstance(v, bool):
+                return v
+            if isinstance(v, (int, float)):
+                return bool(v)
+            if isinstance(v, str):
+                s = v.strip().lower()
+                if s in ("1", "true", "yes", "y", "on"):
+                    return True
+                if s in ("0", "false", "no", "n", "off"):
+                    return False
+            return None
+
+        def as_opt_int(v: object) -> int | None:
+            if v is None or v == "":
+                return None
+            try:
+                return int(v)  # type: ignore[arg-type]
+            except Exception:
+                return None
+
+        def as_keywords(v: object) -> tuple[str, ...]:
+            # Accept ["a","b"], ("a","b"), or "a,b"
+            if v is None:
+                return ()
+            if isinstance(v, (list, tuple)):
+                out = []
+                for x in v:
+                    s = str(x).strip()
+                    if s:
+                        out.append(s)
+                return tuple(out)
+            if isinstance(v, str):
+                parts = [p.strip() for p in v.replace(";", ",").split(",")]
+                return tuple([p for p in parts if p])
+            return ()
+
+        event_detect_motion = as_opt_bool(item.get("event_detect_motion"))
+        event_detect_person = as_opt_bool(item.get("event_detect_person"))
+        event_desktop_notifications = as_opt_bool(item.get("event_desktop_notifications"))
+        event_record_seconds = as_opt_int(item.get("event_record_seconds"))
+        event_cooldown_seconds = as_opt_int(item.get("event_cooldown_seconds"))
+        event_motion_keywords = as_keywords(item.get("event_motion_keywords"))
+        event_person_keywords = as_keywords(item.get("event_person_keywords"))
         try:
             onvif_port = int(onvif_port_raw)
         except Exception:
@@ -95,6 +151,13 @@ def load_cameras(base_dir: Path) -> List[Camera]:
                     path=path,
                     rtsp_url=rtsp_url,
                     onvif_port=onvif_port,
+                    event_detect_motion=event_detect_motion,
+                    event_detect_person=event_detect_person,
+                    event_record_seconds=event_record_seconds,
+                    event_cooldown_seconds=event_cooldown_seconds,
+                    event_desktop_notifications=event_desktop_notifications,
+                    event_motion_keywords=event_motion_keywords,
+                    event_person_keywords=event_person_keywords,
                 )
             )
             continue
