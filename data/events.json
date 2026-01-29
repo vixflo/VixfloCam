@@ -1,5 +1,19 @@
 [
   {
+    "ts": 1769710524.0022385,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\HOL_CASA_event_20260129_201523.ts"
+  },
+  {
     "ts": 1769706476.7420936,
     "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
     "camera_name": "HOL CASA",

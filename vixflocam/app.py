@@ -812,6 +812,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.list = QtWidgets.QListWidget()
         self.list.currentRowChanged.connect(self._on_camera_selected)
+        self._refreshing_list: bool = False
+        self._reorder_guard: bool = False
+
+        # Make the camera list behave like a navigation menu + allow drag-drop reordering.
+        try:
+            self.list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+            self.list.setDragEnabled(True)
+            self.list.setAcceptDrops(True)
+            self.list.setDropIndicatorShown(True)
+            self.list.setDefaultDropAction(QtCore.Qt.DropAction.MoveAction)
+            self.list.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
+            self.list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
+            self.list.setSpacing(2)
+            self.list.setToolTip("Selectează o cameră. Poți reordona camerele cu drag & drop.")
+            # Reorder cameras model when the list rows are moved.
+            self.list.model().rowsMoved.connect(lambda *_args: self._on_camera_list_reordered())
+        except Exception:
+            pass
 
         # Video viewport (clips the native VLC child when we move/resize it for zoom/pan).
         self.video_viewport = QtWidgets.QFrame()
@@ -867,13 +885,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     continue
             return QtGui.QIcon()
 
-        # Modern controls toolbar (replaces the old ctrl_row).
-        self.ctrl_toolbar = QtWidgets.QToolBar("Controls")
-        self.ctrl_toolbar.setMovable(False)
-        self.ctrl_toolbar.setFloatable(False)
-        self.ctrl_toolbar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
-        self.ctrl_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.ctrl_toolbar.setIconSize(QtCore.QSize(18, 18))
+        # Row 1: media toolbar (volume + intercom only).
+        self.media_toolbar = QtWidgets.QToolBar("Media")
+        self.media_toolbar.setMovable(False)
+        self.media_toolbar.setFloatable(False)
+        self.media_toolbar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.PreventContextMenu)
+        self.media_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.media_toolbar.setIconSize(QtCore.QSize(18, 18))
 
         # Volume widget inside toolbar
         vol_wrap = QtWidgets.QWidget()
@@ -889,60 +907,83 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vol_slider.setFixedWidth(140)
         vol_l.addWidget(vol_icon)
         vol_l.addWidget(self.vol_slider)
-        self.ctrl_toolbar.addWidget(vol_wrap)
+        self.media_toolbar.addWidget(vol_wrap)
 
-        self.mute_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaVolumeMuted), "Mute")
+        self.mute_action = self.media_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaVolumeMuted), "Mute")
         self.mute_action.setCheckable(True)
         self.mute_action.setToolTip("Mute")
         self.mute_action.toggled.connect(self._on_mute_toggled)
 
-        self.fill_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton), "Fill")
-        self.fill_action.setCheckable(True)
+        # Intercom (placeholder for two-way audio).
+        self.intercom_action = self.media_toolbar.addAction(
+            _ico_any(
+                getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaVolume", None),
+                getattr(QtWidgets.QStyle.StandardPixmap, "SP_ToolBarHorizontalExtensionButton", None),
+            ),
+            "Intercom",
+        )
+        self.intercom_action.setToolTip("Intercom (two-way audio) - coming soon")
+        self.intercom_action.triggered.connect(self._on_intercom_clicked)
+
+        # Row 2: action "cards"
+        self.actions_row = QtWidgets.QWidget()
+        self.actions_row.setObjectName("actionsRow")
+        actions_layout = QtWidgets.QHBoxLayout(self.actions_row)
+        actions_layout.setContentsMargins(0, 0, 0, 0)
+        actions_layout.setSpacing(10)
+
+        def _card_button(icon: QtGui.QIcon, text: str, *, checkable: bool = False) -> QtWidgets.QToolButton:
+            b = QtWidgets.QToolButton()
+            b.setIcon(icon)
+            b.setText(text)
+            b.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            b.setIconSize(QtCore.QSize(22, 22))
+            b.setCheckable(bool(checkable))
+            b.setAutoRaise(False)
+            b.setObjectName("actionCard")
+            b.setFixedSize(110, 64)
+            b.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+            return b
+
+        self.fill_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton), "Fill", checkable=True)
         self.fill_action.setChecked(True)
         self.fill_action.setToolTip("Fill window (no black bars). Uncheck to fit full frame (letterbox).")
         self.fill_action.toggled.connect(lambda _checked: self._apply_zoom())
 
-        self.ctrl_toolbar.addSeparator()
-
-        self.zoom_out_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft), "Zoom out")
+        self.zoom_out_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft), "Zoom-")
         self.zoom_out_action.setToolTip("Zoom out")
-        self.zoom_out_action.triggered.connect(self._zoom_out)
+        self.zoom_out_action.clicked.connect(self._zoom_out)
 
-        self.zoom_reset_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload), "Reset zoom")
+        self.zoom_reset_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload), "Zoom 1:1")
         self.zoom_reset_action.setToolTip("Reset zoom (1:1)")
-        self.zoom_reset_action.triggered.connect(self._zoom_reset)
+        self.zoom_reset_action.clicked.connect(self._zoom_reset)
 
-        self.zoom_in_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowRight), "Zoom in")
+        self.zoom_in_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowRight), "Zoom+")
         self.zoom_in_action.setToolTip("Zoom in")
-        self.zoom_in_action.triggered.connect(self._zoom_in)
+        self.zoom_in_action.clicked.connect(self._zoom_in)
 
-        self.ctrl_toolbar.addSeparator()
-
-        self.event_rec_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaPlay), "Event Recording")
-        self.event_rec_action.setCheckable(True)
+        self.event_rec_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaPlay), "Events", checkable=True)
         self.event_rec_action.setToolTip("Event Recording (auto clips on motion/person)")
         self.event_rec_action.toggled.connect(self._on_event_recording_toggled)
 
-        self.event_settings_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView), "Event Settings")
+        self.event_settings_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView), "Settings")
         self.event_settings_action.setToolTip("Event Settings (global)")
-        self.event_settings_action.triggered.connect(self._show_event_settings)
+        self.event_settings_action.clicked.connect(self._show_event_settings)
 
-        self.cam_event_settings_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView), "Cam Event Settings")
+        self.cam_event_settings_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView), "Cam Config")
         self.cam_event_settings_action.setToolTip("Cam Event Settings (per camera)")
-        self.cam_event_settings_action.triggered.connect(self._show_camera_event_settings)
+        self.cam_event_settings_action.clicked.connect(self._show_camera_event_settings)
 
-        self.recordings_folder_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon), "Recordings Folder")
+        self.recordings_folder_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon), "Folder")
         self.recordings_folder_action.setToolTip("Pick/Open recordings folder")
-        self.recordings_folder_action.triggered.connect(self._choose_recordings_folder)
+        self.recordings_folder_action.clicked.connect(self._choose_recordings_folder)
 
-        self.events_action = self.ctrl_toolbar.addAction(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView), "Events")
+        self.events_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView), "List")
         self.events_action.setToolTip("Events list / topics")
-        self.events_action.triggered.connect(self._show_events_panel)
-
-        self.ctrl_toolbar.addSeparator()
+        self.events_action.clicked.connect(self._show_events_panel)
 
         # NOTE: SP_MediaRecord is not available on all Qt versions; fall back gracefully.
-        self.record_action = self.ctrl_toolbar.addAction(
+        self.record_action = _card_button(
             _ico_any(
                 getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaRecord", None),
                 getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogSaveButton", None),
@@ -953,6 +994,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.record_action.setCheckable(True)
         self.record_action.setToolTip("Start/Stop manual recording (selected camera)")
         self.record_action.toggled.connect(self._on_record_toggled)
+
+        for w in (
+            self.fill_action,
+            self.zoom_out_action,
+            self.zoom_reset_action,
+            self.zoom_in_action,
+            self.event_rec_action,
+            self.event_settings_action,
+            self.cam_event_settings_action,
+            self.recordings_folder_action,
+            self.events_action,
+            self.record_action,
+        ):
+            actions_layout.addWidget(w)
+        actions_layout.addStretch(1)
 
         self._event_rec_seq: int = 0
         self._event_recording_active: bool = False
@@ -980,11 +1036,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # PTZ controls (minimal)
         self.ptz_group = QtWidgets.QGroupBox("PTZ (ONVIF)")
+        self.ptz_group.setObjectName("ptzGroup")
         self.ptz_status = QtWidgets.QLabel("PTZ: disabled")
+        try:
+            self.ptz_status.setWordWrap(False)
+        except Exception:
+            pass
         self.ptz_diag = QtWidgets.QToolButton()
-        self.ptz_diag.setText("Diag")
         self.ptz_diag.setIcon(_ico(QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation))
         self.ptz_diag.setToolTip("PTZ Diagnostics")
+        self.ptz_diag.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.ptz_diag.setIconSize(QtCore.QSize(18, 18))
+        self.ptz_diag.setAutoRaise(True)
+        self.ptz_diag.setFixedSize(34, 28)
 
         # Compact D-pad buttons
         self.ptz_up = QtWidgets.QToolButton()
@@ -1030,7 +1094,9 @@ class MainWindow(QtWidgets.QMainWindow):
         pad.addWidget(self.ptz_right, 1, 2, QtCore.Qt.AlignmentFlag.AlignCenter)
         pad.addWidget(self.ptz_down, 2, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
         ptz_layout.addWidget(pad_wrap, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)
-        self.ptz_group.setMaximumHeight(190)
+        # Keep a consistent height in the sidebar to avoid layout squeeze/overlap.
+        self.ptz_group.setMinimumHeight(230)
+        self.ptz_group.setMaximumHeight(230)
 
         # PTZ: trimite comenzi repetate cât timp butonul e ținut apăsat (mai robust decât o singură comandă).
         self.ptz_up.pressed.connect(lambda: self._ptz_begin_hold(0.0, 0.45))
@@ -1050,20 +1116,46 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_btn = QtWidgets.QPushButton("Add")
         self.edit_btn = QtWidgets.QPushButton("Edit")
         self.remove_btn = QtWidgets.QPushButton("Remove")
+        for b in (self.add_btn, self.edit_btn, self.remove_btn):
+            try:
+                b.setObjectName("sidebarActionButton")
+            except Exception:
+                pass
         self.add_btn.clicked.connect(self._add_camera)
         self.edit_btn.clicked.connect(self._edit_selected)
         self.remove_btn.clicked.connect(self._remove_selected)
 
-        btn_row = QtWidgets.QHBoxLayout()
+        # Sidebar actions (top)
+        try:
+            self.add_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_FileDialogNewFolder))
+        except Exception:
+            pass
+        try:
+            self.edit_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_FileDialogDetailedView))
+        except Exception:
+            pass
+        try:
+            self.remove_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_TrashIcon))
+        except Exception:
+            pass
+
+        self.sidebar_actions = QtWidgets.QWidget()
+        self.sidebar_actions.setObjectName("sidebarActions")
+        btn_row = QtWidgets.QHBoxLayout(self.sidebar_actions)
+        btn_row.setContentsMargins(0, 0, 0, 0)
+        btn_row.setSpacing(8)
         btn_row.addWidget(self.add_btn)
         btn_row.addWidget(self.edit_btn)
         btn_row.addWidget(self.remove_btn)
-        btn_row.addStretch(1)
 
         left = QtWidgets.QWidget()
         left_layout = QtWidgets.QVBoxLayout(left)
+        left_layout.setContentsMargins(8, 8, 8, 8)
+        left_layout.setSpacing(10)
+        left_layout.addWidget(self.sidebar_actions, 0)
         left_layout.addWidget(self.list, 1)
-        left_layout.addLayout(btn_row)
+        # Move PTZ pad into the sidebar (bottom) for a compact "joystick" zone.
+        left_layout.addWidget(self.ptz_group, 0)
 
         right = QtWidgets.QWidget()
         right_layout = QtWidgets.QVBoxLayout(right)
@@ -1076,8 +1168,8 @@ class MainWindow(QtWidgets.QMainWindow):
         live_layout = QtWidgets.QVBoxLayout(live_panel)
         live_layout.setContentsMargins(0, 0, 0, 0)
 
-        live_layout.addWidget(self.ctrl_toolbar)
-        live_layout.addWidget(self.ptz_group)
+        live_layout.addWidget(self.media_toolbar)
+        live_layout.addWidget(self.actions_row)
 
         events_panel = QtWidgets.QWidget()
         events_layout = QtWidgets.QVBoxLayout(events_panel)
@@ -1478,9 +1570,61 @@ class MainWindow(QtWidgets.QMainWindow):
         return super().eventFilter(watched, event)
 
     def _refresh_list(self) -> None:
+        self._refreshing_list = True
+        try:
+            sel_id = self._current_camera.id if self._current_camera is not None else None
+        except Exception:
+            sel_id = None
+
         self.list.clear()
         for cam in self.cameras:
-            self.list.addItem(cam.name)
+            it = QtWidgets.QListWidgetItem(str(cam.name))
+            it.setData(QtCore.Qt.ItemDataRole.UserRole, str(cam.id))
+            try:
+                it.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_ComputerIcon))
+            except Exception:
+                pass
+            try:
+                it.setSizeHint(QtCore.QSize(10, 34))
+            except Exception:
+                pass
+            self.list.addItem(it)
+
+        if sel_id:
+            for i in range(self.list.count()):
+                it = self.list.item(i)
+                if str(it.data(QtCore.Qt.ItemDataRole.UserRole) or "") == str(sel_id):
+                    self.list.setCurrentRow(i)
+                    break
+        self._refreshing_list = False
+
+    def _on_camera_list_reordered(self) -> None:
+        if self._refreshing_list or self._reorder_guard:
+            return
+        self._reorder_guard = True
+        try:
+            ids: list[str] = []
+            for i in range(self.list.count()):
+                it = self.list.item(i)
+                cid = str(it.data(QtCore.Qt.ItemDataRole.UserRole) or "").strip()
+                if cid:
+                    ids.append(cid)
+            if not ids:
+                return
+            by_id = {c.id: c for c in self.cameras}
+            new_cams: list[Camera] = []
+            for cid in ids:
+                c = by_id.get(cid)
+                if c is not None:
+                    new_cams.append(c)
+            # Preserve any cameras that somehow weren't present in the list.
+            for c in self.cameras:
+                if c.id not in set(ids):
+                    new_cams.append(c)
+            self.cameras = new_cams
+            save_cameras(self._base_dir, self.cameras)
+        finally:
+            self._reorder_guard = False
 
     def _ensure_player(self) -> None:
         # Player creation + attaching to the video widget must happen only once we have a real HWND.
@@ -1548,10 +1692,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self._init_ptz_for_camera(cam)
 
     def _on_camera_selected(self, row: int) -> None:
-        if row < 0 or row >= len(self.cameras):
+        if row < 0 or row >= self.list.count():
             return
-        cam = self.cameras[row]
+        it = self.list.item(row)
+        cid = str(it.data(QtCore.Qt.ItemDataRole.UserRole) or "").strip()
+        cam = next((c for c in self.cameras if c.id == cid), None)
+        if cam is None:
+            return
         self._play_camera(cam)
+
+    def _on_intercom_clicked(self) -> None:
+        QtWidgets.QMessageBox.information(
+            self,
+            "Intercom",
+            "Intercom (two-way audio) nu este implementat încă.\n"
+            "Următorul pas: ONVIF/RTSP audio backchannel + UI push-to-talk.",
+        )
 
     def _on_volume_changed(self, value: int) -> None:
         if self._player is None:

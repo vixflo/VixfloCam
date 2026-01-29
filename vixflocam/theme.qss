@@ -24,6 +24,10 @@ QGroupBox::title {
   padding: 0 6px;
   color: #cfd8dc;
 }
+QGroupBox#ptzGroup {
+  margin-top: 10px;
+  padding: 6px;
+}
 
 QPushButton {
   background: #2a2b2e;
@@ -89,7 +93,12 @@ QListWidget {
   border: 1px solid #2f3136;
   border-radius: 8px;
 }
-QListWidget::item { padding: 6px 8px; }
+QListWidget::item {
+  padding: 8px 10px;
+  margin: 2px;
+  border-radius: 8px;
+}
+QListWidget::item:hover { background: #26282d; }
 QListWidget::item:selected { background: #2b79c2; color: white; }
 
 QPlainTextEdit {
@@ -98,6 +107,27 @@ QPlainTextEdit {
   border-radius: 8px;
   padding: 6px;
 }
+
+/* Sidebar */
+QWidget#sidebarActions {
+  background: transparent;
+}
+QPushButton#sidebarActionButton {
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+/* Action cards (row 2) */
+QWidget#actionsRow { background: transparent; }
+QToolButton#actionCard {
+  background: #2a2b2e;
+  border: 1px solid #3a3b40;
+  border-radius: 12px;
+  padding: 8px;
+}
+QToolButton#actionCard:hover { background: #32343a; }
+QToolButton#actionCard:pressed { background: #222327; }
+QToolButton#actionCard:checked { background: #2b79c2; border-color: #2b79c2; color: #ffffff; }
 
 /* PTZ compact pad */
 QToolButton#ptzPadButton {
