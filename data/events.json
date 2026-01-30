@@ -1,5 +1,1685 @@
 [
   {
+    "ts": 1769792697.950493,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_190457.ts"
+  },
+  {
+    "ts": 1769792630.7721574,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_190350.ts"
+  },
+  {
+    "ts": 1769792539.1856432,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_190219.ts"
+  },
+  {
+    "ts": 1769792463.0280688,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_190103.ts"
+  },
+  {
+    "ts": 1769792332.8940234,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185852.ts"
+  },
+  {
+    "ts": 1769792209.8241308,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185649.ts"
+  },
+  {
+    "ts": 1769792090.8111703,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185450.ts"
+  },
+  {
+    "ts": 1769792026.7368846,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185346.ts"
+  },
+  {
+    "ts": 1769791917.576663,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185157.ts"
+  },
+  {
+    "ts": 1769791848.5169997,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_185048.ts"
+  },
+  {
+    "ts": 1769791757.7884421,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_184917.ts"
+  },
+  {
+    "ts": 1769791631.8770008,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_184711.ts"
+  },
+  {
+    "ts": 1769791541.1993332,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_184541.ts"
+  },
+  {
+    "ts": 1769791466.546287,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_184426.ts"
+  },
+  {
+    "ts": 1769791305.4495223,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_184145.ts"
+  },
+  {
+    "ts": 1769791062.1350963,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_183742.ts"
+  },
+  {
+    "ts": 1769790992.9959867,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_183632.ts"
+  },
+  {
+    "ts": 1769790912.4742668,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_183512.ts"
+  },
+  {
+    "ts": 1769790909.4600434,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_183509.ts"
+  },
+  {
+    "ts": 1769790834.1573486,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_183354.ts"
+  },
+  {
+    "ts": 1769790762.412547,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_183242.ts"
+  },
+  {
+    "ts": 1769790668.055639,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_183108.ts"
+  },
+  {
+    "ts": 1769790629.4047606,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_183029.ts"
+  },
+  {
+    "ts": 1769790497.8301458,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182817.ts"
+  },
+  {
+    "ts": 1769790419.6188474,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182659.ts"
+  },
+  {
+    "ts": 1769790253.033233,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182413.ts"
+  },
+  {
+    "ts": 1769790197.5012114,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_182317.ts"
+  },
+  {
+    "ts": 1769790184.903298,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182304.ts"
+  },
+  {
+    "ts": 1769790093.83418,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182133.ts"
+  },
+  {
+    "ts": 1769790032.1194787,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_182032.ts"
+  },
+  {
+    "ts": 1769789903.8945062,
+    "camera_id": "7cfe1d45-3804-4022-a791-d9e8d5db2e3a",
+    "camera_name": "SPATE ATELIER",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\SPATE_ATELIER_event_20260130_181823.ts"
+  },
+  {
+    "ts": 1769789721.5434763,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_181521.ts"
+  },
+  {
+    "ts": 1769789655.8010325,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_181415.ts"
+  },
+  {
+    "ts": 1769789553.7707279,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_181233.ts"
+  },
+  {
+    "ts": 1769789293.047997,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_180813.ts"
+  },
+  {
+    "ts": 1769789206.422779,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_180646.ts"
+  },
+  {
+    "ts": 1769789182.8583486,
+    "camera_id": "aae67992-7e62-4cc7-9bdb-47e0bb2d898d",
+    "camera_name": "ATELIER INTERIOR B",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_INTERIOR_B_event_20260130_180622.ts"
+  },
+  {
+    "ts": 1769789067.2537398,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_180427.ts"
+  },
+  {
+    "ts": 1769788981.9652767,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_180301.ts"
+  },
+  {
+    "ts": 1769788661.8665903,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_175741.ts"
+  },
+  {
+    "ts": 1769788515.5075498,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_175515.ts"
+  },
+  {
+    "ts": 1769788430.8382187,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_175350.ts"
+  },
+  {
+    "ts": 1769788387.2398643,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_175307.ts"
+  },
+  {
+    "ts": 1769788296.922596,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_175136.ts"
+  },
+  {
+    "ts": 1769788238.8947043,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_175038.ts"
+  },
+  {
+    "ts": 1769788175.4911077,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174935.ts"
+  },
+  {
+    "ts": 1769788105.173409,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174825.ts"
+  },
+  {
+    "ts": 1769788029.9810288,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174709.ts"
+  },
+  {
+    "ts": 1769787931.1723092,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174531.ts"
+  },
+  {
+    "ts": 1769787798.6996846,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174318.ts"
+  },
+  {
+    "ts": 1769787683.322663,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174123.ts"
+  },
+  {
+    "ts": 1769787618.0144818,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_174018.ts"
+  },
+  {
+    "ts": 1769787525.9733832,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_173845.ts"
+  },
+  {
+    "ts": 1769787347.6397572,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_173547.ts"
+  },
+  {
+    "ts": 1769787250.2275925,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_173410.ts"
+  },
+  {
+    "ts": 1769787127.1781325,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_173207.ts"
+  },
+  {
+    "ts": 1769787116.865927,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_173156.ts"
+  },
+  {
+    "ts": 1769786921.83819,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_172841.ts"
+  },
+  {
+    "ts": 1769786482.7002428,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_172122.ts"
+  },
+  {
+    "ts": 1769786471.7112193,
+    "camera_id": "a2427270-8ae7-4ce6-933a-129dbe36bead",
+    "camera_name": "ATELIER FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_FAȚĂ_event_20260130_172111.ts"
+  },
+  {
+    "ts": 1769786437.441632,
+    "camera_id": "7cfe1d45-3804-4022-a791-d9e8d5db2e3a",
+    "camera_name": "SPATE ATELIER",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\SPATE_ATELIER_event_20260130_172037.ts"
+  },
+  {
+    "ts": 1769786393.561533,
+    "camera_id": "a2427270-8ae7-4ce6-933a-129dbe36bead",
+    "camera_name": "ATELIER FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_FAȚĂ_event_20260130_171953.ts"
+  },
+  {
+    "ts": 1769786360.7064064,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_171920.ts"
+  },
+  {
+    "ts": 1769786325.5965257,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_171845.ts"
+  },
+  {
+    "ts": 1769786304.568014,
+    "camera_id": "a2427270-8ae7-4ce6-933a-129dbe36bead",
+    "camera_name": "ATELIER FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_FAȚĂ_event_20260130_171824.ts"
+  },
+  {
+    "ts": 1769786024.4564805,
+    "camera_id": "aae67992-7e62-4cc7-9bdb-47e0bb2d898d",
+    "camera_name": "ATELIER INTERIOR B",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_INTERIOR_B_event_20260130_171344.ts"
+  },
+  {
+    "ts": 1769786016.577262,
+    "camera_id": "a2427270-8ae7-4ce6-933a-129dbe36bead",
+    "camera_name": "ATELIER FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\ATELIER_FAȚĂ_event_20260130_171336.ts"
+  },
+  {
+    "ts": 1769785958.4903648,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_171238.ts"
+  },
+  {
+    "ts": 1769785941.129302,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_171221.ts"
+  },
+  {
+    "ts": 1769785925.6549706,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_171205.ts"
+  },
+  {
+    "ts": 1769785834.0773754,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_171034.ts"
+  },
+  {
+    "ts": 1769784523.2775605,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_164843.ts"
+  },
+  {
+    "ts": 1769784516.3879502,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_164836.ts"
+  },
+  {
+    "ts": 1769784367.0240128,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_164607.ts"
+  },
+  {
+    "ts": 1769784319.5709014,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_164519.ts"
+  },
+  {
+    "ts": 1769784292.989861,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_164452.ts"
+  },
+  {
+    "ts": 1769784170.9580946,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_164250.ts"
+  },
+  {
+    "ts": 1769783996.102615,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_163956.ts"
+  },
+  {
+    "ts": 1769783099.7299142,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_162459.ts"
+  },
+  {
+    "ts": 1769783097.3954983,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_162457.ts"
+  },
+  {
+    "ts": 1769782741.3712635,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_161901.ts"
+  },
+  {
+    "ts": 1769782447.1971583,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_161407.ts"
+  },
+  {
+    "ts": 1769781528.569946,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_155848.ts"
+  },
+  {
+    "ts": 1769779993.6600497,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_153313.ts"
+  },
+  {
+    "ts": 1769778539.8331778,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_150859.ts"
+  },
+  {
+    "ts": 1769778533.433173,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_150853.ts"
+  },
+  {
+    "ts": 1769778467.954068,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_150747.ts"
+  },
+  {
+    "ts": 1769777929.26509,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_145849.ts"
+  },
+  {
+    "ts": 1769777916.649308,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_145836.ts"
+  },
+  {
+    "ts": 1769777401.521444,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_145001.ts"
+  },
+  {
+    "ts": 1769777384.3733695,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_144944.ts"
+  },
+  {
+    "ts": 1769777004.7195568,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_144324.ts"
+  },
+  {
+    "ts": 1769776946.0007753,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_144225.ts"
+  },
+  {
+    "ts": 1769775844.0435061,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_142404.ts"
+  },
+  {
+    "ts": 1769775833.246141,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_142353.ts"
+  },
+  {
+    "ts": 1769775764.2798264,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_142244.ts"
+  },
+  {
+    "ts": 1769775684.081935,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_142124.ts"
+  },
+  {
+    "ts": 1769772406.6019068,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_132646.ts"
+  },
+  {
+    "ts": 1769772399.9658442,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_132639.ts"
+  },
+  {
+    "ts": 1769772056.2135189,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_132056.ts"
+  },
+  {
+    "ts": 1769772048.0829268,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_132048.ts"
+  },
+  {
+    "ts": 1769771375.6881697,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_130935.ts"
+  },
+  {
+    "ts": 1769770512.0305808,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_125512.ts"
+  },
+  {
+    "ts": 1769770507.0339355,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_125507.ts"
+  },
+  {
+    "ts": 1769770219.0985947,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_125019.ts"
+  },
+  {
+    "ts": 1769770203.3047268,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_125003.ts"
+  },
+  {
+    "ts": 1769769805.2206488,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_124325.ts"
+  },
+  {
+    "ts": 1769769801.7252254,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_124321.ts"
+  },
+  {
+    "ts": 1769769076.8937078,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_123116.ts"
+  },
+  {
+    "ts": 1769767497.4994442,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_120457.ts"
+  },
+  {
+    "ts": 1769767359.24373,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_120239.ts"
+  },
+  {
+    "ts": 1769767334.180237,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=false"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_120214.ts"
+  },
+  {
+    "ts": 1769767332.1239378,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_120212.ts"
+  },
+  {
+    "ts": 1769767323.412264,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_120203.ts"
+  },
+  {
+    "ts": 1769767272.0837328,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\CURTEA_DIN_FAȚĂ_event_20260130_120112.ts"
+  },
+  {
+    "ts": 1769767257.0349526,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_120057.ts"
+  },
+  {
+    "ts": 1769767248.1218717,
+    "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
+    "camera_name": "HOL CASA",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\HOL_CASA_event_20260130_120048.ts"
+  },
+  {
+    "ts": 1769767245.8842397,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_120045.ts"
+  },
+  {
+    "ts": 1769767094.8950567,
+    "camera_id": "dd425c8e-7792-4fe7-9cce-70abdd48ec93",
+    "camera_name": "Tapo_C510WS_C799",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\Tapo_C510WS_C799_event_20260130_115814.ts"
+  },
+  {
+    "ts": 1769767088.5284877,
+    "camera_id": "384c1c0a-7c66-4c7a-aaf7-df32f9cf5bef",
+    "camera_name": "POARTA DE ACCES",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\events\\POARTA_DE_ACCES_event_20260130_115808.ts"
+  },
+  {
     "ts": 1769734120.4841719,
     "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
     "camera_name": "CURTEA DIN FAȚĂ",
