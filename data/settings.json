@@ -5,5 +5,6 @@
   "detect_person": true,
   "event_record_seconds": 60,
   "event_cooldown_seconds": 20,
-  "desktop_notifications": true
+  "desktop_notifications": true,
+  "intercom_device": "default"
 }

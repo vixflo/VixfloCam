@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ctypes
 import logging
+import shutil
+import subprocess
 import sys
 import threading
 import time
@@ -74,6 +76,9 @@ class AddCameraDialog(QtWidgets.QDialog):
         self.preview = QtWidgets.QLineEdit()
         self.preview.setReadOnly(True)
 
+        self.intercom_url_edit = QtWidgets.QLineEdit()
+        self.intercom_url_edit.setPlaceholderText("rtsp://... (optional, for two-way audio)")
+
         self._update_preview_btn = QtWidgets.QPushButton("Preview URL")
         self._update_preview_btn.clicked.connect(self._update_preview)
 
@@ -93,6 +98,7 @@ class AddCameraDialog(QtWidgets.QDialog):
         preview_row.addWidget(self.preview, 1)
         preview_row.addWidget(self._update_preview_btn)
         form.addRow("RTSP Preview", preview_row)
+        form.addRow("Intercom URL (optional)", self.intercom_url_edit)
 
         buttons = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
@@ -116,6 +122,7 @@ class AddCameraDialog(QtWidgets.QDialog):
                 self.port_edit.setValue(camera.port or 554)
                 self.path_combo.setCurrentText(camera.path or "stream1")
                 self.onvif_port.setValue(int(camera.onvif_port or 0))
+                self.intercom_url_edit.setText(str(getattr(camera, "intercom_url", "") or ""))
                 self._update_preview()
 
         self.host_edit.textChanged.connect(self._update_preview)
@@ -207,6 +214,7 @@ class AddCameraDialog(QtWidgets.QDialog):
         port = int(self.port_edit.value())
         path = self.path_combo.currentText().strip() or "stream1"
         onvif_port = int(self.onvif_port.value())
+        intercom_url = self.intercom_url_edit.text().strip()
 
         if not name:
             raise ValueError("Name is required")
@@ -226,6 +234,7 @@ class AddCameraDialog(QtWidgets.QDialog):
             path=path,
             rtsp_url="",
             onvif_port=onvif_port,
+            intercom_url=intercom_url,
         )
 
 
@@ -237,6 +246,70 @@ class _UiInvokeBridge(QtCore.QObject):
     invoke = QtCore.Signal(object)
 
 
+class _ResponsiveCardWrap(QtWidgets.QWidget):
+    def __init__(self, parent: QtWidgets.QWidget | None = None):
+        super().__init__(parent)
+        self.setObjectName("actionsRow")
+        self._cards: list[QtWidgets.QToolButton] = []
+        self._layout = QtWidgets.QGridLayout(self)
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setHorizontalSpacing(10)
+        self._layout.setVerticalSpacing(10)
+        self._layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignTop)
+        self._last_cols: int = 0
+        self._max_cols: int = 6
+
+    def set_max_columns(self, n: int) -> None:
+        try:
+            self._max_cols = max(1, int(n))
+        except Exception:
+            self._max_cols = 6
+        self._rebuild()
+
+    def set_cards(self, cards: list[QtWidgets.QToolButton]) -> None:
+        self._cards = list(cards)
+        self._rebuild()
+
+    def resizeEvent(self, event: QtGui.QResizeEvent) -> None:
+        super().resizeEvent(event)
+        self._rebuild()
+
+    def _rebuild(self) -> None:
+        if not self._cards:
+            return
+
+        # Compute columns based on available width.
+        try:
+            card_w = max(60, int(self._cards[0].sizeHint().width()))
+        except Exception:
+            card_w = 110
+        spacing = int(self._layout.horizontalSpacing() or 10)
+        avail = max(1, int(self.width()))
+        cols = max(1, (avail + spacing) // (card_w + spacing))
+        cols = min(cols, max(1, len(self._cards)))
+        cols = min(cols, max(1, int(self._max_cols)))
+        if cols == self._last_cols and self._layout.count() == len(self._cards):
+            return
+        self._last_cols = cols
+
+        # Clear layout items (do not delete widgets).
+        while self._layout.count():
+            it = self._layout.takeAt(0)
+            w = it.widget()
+            if w is not None:
+                w.setParent(self)
+
+        # Center row by adjusting left margin.
+        row_w = (cols * card_w) + ((cols - 1) * spacing)
+        left = max(0, int((avail - row_w) / 2))
+        self._layout.setContentsMargins(left, 0, 0, 0)
+
+        for idx, w in enumerate(self._cards):
+            r = idx // cols
+            c = idx % cols
+            self._layout.addWidget(w, r, c, QtCore.Qt.AlignmentFlag.AlignTop)
+
+
 class EventSettingsDialog(QtWidgets.QDialog):
     def __init__(self, parent: QtWidgets.QWidget | None, settings: AppSettings):
         super().__init__(parent)
@@ -246,10 +319,13 @@ class EventSettingsDialog(QtWidgets.QDialog):
         self.motion_chk = QtWidgets.QCheckBox("Detect motion")
         self.person_chk = QtWidgets.QCheckBox("Detect person")
         self.notify_chk = QtWidgets.QCheckBox("Desktop notifications")
+        self.intercom_device = QtWidgets.QLineEdit()
+        self.intercom_device.setPlaceholderText("default (ffmpeg dshow device name)")
 
         self.motion_chk.setChecked(bool(settings.detect_motion))
         self.person_chk.setChecked(bool(settings.detect_person))
         self.notify_chk.setChecked(bool(settings.desktop_notifications))
+        self.intercom_device.setText(str(getattr(settings, "intercom_device", "default") or "default"))
 
         self.record_secs = QtWidgets.QSpinBox()
         self.record_secs.setRange(10, 300)
@@ -267,6 +343,7 @@ class EventSettingsDialog(QtWidgets.QDialog):
         form.addRow(self.notify_chk)
         form.addRow("Record duration", self.record_secs)
         form.addRow("Cooldown", self.cooldown_secs)
+        form.addRow("Intercom device", self.intercom_device)
 
         buttons = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
@@ -284,6 +361,7 @@ class EventSettingsDialog(QtWidgets.QDialog):
         base.desktop_notifications = bool(self.notify_chk.isChecked())
         base.event_record_seconds = int(self.record_secs.value())
         base.event_cooldown_seconds = int(self.cooldown_secs.value())
+        base.intercom_device = str(self.intercom_device.text().strip() or "default")
         return base
 
 
@@ -386,6 +464,7 @@ class CameraEventSettingsDialog(QtWidgets.QDialog):
             event_desktop_notifications=bool(self.notify_chk.isChecked()),
             event_motion_keywords=self._parse_keywords(self.motion_kw.text()),
             event_person_keywords=self._parse_keywords(self.person_kw.text()),
+            intercom_url=str(getattr(self._cam, "intercom_url", "") or ""),
         )
 
 
@@ -885,6 +964,32 @@ class MainWindow(QtWidgets.QMainWindow):
                     continue
             return QtGui.QIcon()
 
+        def _emoji_icon(emoji: str) -> QtGui.QIcon:
+            try:
+                e = str(emoji or "").strip()
+                if not e:
+                    return QtGui.QIcon()
+                pm = QtGui.QPixmap(28, 28)
+                pm.fill(QtCore.Qt.GlobalColor.transparent)
+                p = QtGui.QPainter(pm)
+                try:
+                    p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing, True)
+                    f = QtGui.QFont("Segoe UI Emoji")
+                    f.setPixelSize(20)
+                    p.setFont(f)
+                    p.drawText(pm.rect(), QtCore.Qt.AlignmentFlag.AlignCenter, e)
+                finally:
+                    p.end()
+                return QtGui.QIcon(pm)
+            except Exception:
+                return QtGui.QIcon()
+
+        def _prefer_icon(primary: QtGui.QIcon, fallback: QtGui.QIcon) -> QtGui.QIcon:
+            try:
+                return primary if not primary.isNull() else fallback
+            except Exception:
+                return fallback
+
         # Row 1: media toolbar (volume + intercom only).
         self.media_toolbar = QtWidgets.QToolBar("Media")
         self.media_toolbar.setMovable(False)
@@ -914,23 +1019,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mute_action.setToolTip("Mute")
         self.mute_action.toggled.connect(self._on_mute_toggled)
 
-        # Intercom (placeholder for two-way audio).
+        # Intercom (two-way audio) via ffmpeg (push-to-talk).
+        self._intercom_proc: subprocess.Popen[bytes] | None = None
+        self._intercom_watch_timer = QtCore.QTimer(self)
+        self._intercom_watch_timer.setInterval(800)
+        self._intercom_watch_timer.timeout.connect(self._poll_intercom_proc)
         self.intercom_action = self.media_toolbar.addAction(
-            _ico_any(
-                getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaVolume", None),
-                getattr(QtWidgets.QStyle.StandardPixmap, "SP_ToolBarHorizontalExtensionButton", None),
+            _prefer_icon(
+                _emoji_icon("🎙️"),
+                _ico_any(
+                    getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaVolume", None),
+                    getattr(QtWidgets.QStyle.StandardPixmap, "SP_ToolBarHorizontalExtensionButton", None),
+                ),
             ),
             "Intercom",
         )
-        self.intercom_action.setToolTip("Intercom (two-way audio) - coming soon")
-        self.intercom_action.triggered.connect(self._on_intercom_clicked)
+        self.intercom_action.setCheckable(True)
+        self.intercom_action.setToolTip("Intercom (push-to-talk)")
+        self.intercom_action.toggled.connect(self._on_intercom_toggled)
 
         # Row 2: action "cards"
-        self.actions_row = QtWidgets.QWidget()
-        self.actions_row.setObjectName("actionsRow")
-        actions_layout = QtWidgets.QHBoxLayout(self.actions_row)
-        actions_layout.setContentsMargins(0, 0, 0, 0)
-        actions_layout.setSpacing(10)
+        self.actions_row = _ResponsiveCardWrap()
 
         def _card_button(icon: QtGui.QIcon, text: str, *, checkable: bool = False) -> QtWidgets.QToolButton:
             b = QtWidgets.QToolButton()
@@ -945,49 +1054,81 @@ class MainWindow(QtWidgets.QMainWindow):
             b.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
             return b
 
-        self.fill_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton), "Fill", checkable=True)
+        self.fill_action = _card_button(
+            _prefer_icon(_emoji_icon("⛶"), _ico(QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton)),
+            "Fill",
+            checkable=True,
+        )
         self.fill_action.setChecked(True)
         self.fill_action.setToolTip("Fill window (no black bars). Uncheck to fit full frame (letterbox).")
         self.fill_action.toggled.connect(lambda _checked: self._apply_zoom())
 
-        self.zoom_out_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft), "Zoom-")
+        self.zoom_out_action = _card_button(
+            _prefer_icon(_emoji_icon("🔎"), _ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft)),
+            "Zoom-",
+        )
         self.zoom_out_action.setToolTip("Zoom out")
         self.zoom_out_action.clicked.connect(self._zoom_out)
 
-        self.zoom_reset_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload), "Zoom 1:1")
+        self.zoom_reset_action = _card_button(
+            _prefer_icon(_emoji_icon("🎯"), _ico(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload)),
+            "Zoom 1:1",
+        )
         self.zoom_reset_action.setToolTip("Reset zoom (1:1)")
         self.zoom_reset_action.clicked.connect(self._zoom_reset)
 
-        self.zoom_in_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowRight), "Zoom+")
+        self.zoom_in_action = _card_button(
+            _prefer_icon(_emoji_icon("🔍"), _ico(QtWidgets.QStyle.StandardPixmap.SP_ArrowRight)),
+            "Zoom+",
+        )
         self.zoom_in_action.setToolTip("Zoom in")
         self.zoom_in_action.clicked.connect(self._zoom_in)
 
-        self.event_rec_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_MediaPlay), "Events", checkable=True)
+        self.event_rec_action = _card_button(
+            _prefer_icon(_emoji_icon("🔮"), _ico(QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation)),
+            "Events",
+            checkable=True,
+        )
         self.event_rec_action.setToolTip("Event Recording (auto clips on motion/person)")
         self.event_rec_action.toggled.connect(self._on_event_recording_toggled)
 
-        self.event_settings_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView), "Settings")
+        self.event_settings_action = _card_button(
+            _prefer_icon(_emoji_icon("🛠️"), _ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView)),
+            "Settings",
+        )
         self.event_settings_action.setToolTip("Event Settings (global)")
         self.event_settings_action.clicked.connect(self._show_event_settings)
 
-        self.cam_event_settings_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView), "Cam Config")
+        self.cam_event_settings_action = _card_button(
+            _prefer_icon(_emoji_icon("⚙️"), _ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView)),
+            "Cam Config",
+        )
         self.cam_event_settings_action.setToolTip("Cam Event Settings (per camera)")
         self.cam_event_settings_action.clicked.connect(self._show_camera_event_settings)
 
-        self.recordings_folder_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon), "Folder")
+        self.recordings_folder_action = _card_button(
+            _prefer_icon(_emoji_icon("📁"), _ico(QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon)),
+            "Folder",
+        )
         self.recordings_folder_action.setToolTip("Pick/Open recordings folder")
         self.recordings_folder_action.clicked.connect(self._choose_recordings_folder)
 
-        self.events_action = _card_button(_ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView), "List")
+        self.events_action = _card_button(
+            _prefer_icon(_emoji_icon("📜"), _ico(QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView)),
+            "List",
+        )
         self.events_action.setToolTip("Events list / topics")
         self.events_action.clicked.connect(self._show_events_panel)
 
         # NOTE: SP_MediaRecord is not available on all Qt versions; fall back gracefully.
         self.record_action = _card_button(
-            _ico_any(
-                getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaRecord", None),
-                getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogSaveButton", None),
-                getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogApplyButton", None),
+            _prefer_icon(
+                _emoji_icon("🎥"),
+                _ico_any(
+                    getattr(QtWidgets.QStyle.StandardPixmap, "SP_MediaRecord", None),
+                    getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogSaveButton", None),
+                    getattr(QtWidgets.QStyle.StandardPixmap, "SP_DialogApplyButton", None),
+                ),
             ),
             "Start Recording",
         )
@@ -995,7 +1136,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.record_action.setToolTip("Start/Stop manual recording (selected camera)")
         self.record_action.toggled.connect(self._on_record_toggled)
 
-        for w in (
+        cards = [
             self.fill_action,
             self.zoom_out_action,
             self.zoom_reset_action,
@@ -1006,9 +1147,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.recordings_folder_action,
             self.events_action,
             self.record_action,
-        ):
-            actions_layout.addWidget(w)
-        actions_layout.addStretch(1)
+        ]
+        self.actions_row.set_max_columns(6)
+        self.actions_row.set_cards(cards)
 
         self._event_rec_seq: int = 0
         self._event_recording_active: bool = False
@@ -1042,6 +1183,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ptz_status.setWordWrap(False)
         except Exception:
             pass
+        try:
+            self.ptz_status.setFixedHeight(18)
+        except Exception:
+            pass
         self.ptz_diag = QtWidgets.QToolButton()
         self.ptz_diag.setIcon(_ico(QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation))
         self.ptz_diag.setToolTip("PTZ Diagnostics")
@@ -1068,11 +1213,11 @@ class MainWindow(QtWidgets.QMainWindow):
             b.setToolTip(tip)
             b.setAutoRaise(True)
             b.setObjectName("ptzPadButton")
-            b.setFixedSize(44, 44)
+            b.setFixedSize(38, 38)
             b.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
 
         self.ptz_stop.setObjectName("ptzPadStop")
-        self.ptz_stop.setFixedSize(48, 48)
+        self.ptz_stop.setFixedSize(42, 42)
 
         ptz_layout = QtWidgets.QVBoxLayout(self.ptz_group)
         ptz_layout.setContentsMargins(10, 10, 10, 10)
@@ -1087,7 +1232,7 @@ class MainWindow(QtWidgets.QMainWindow):
         pad_wrap = QtWidgets.QWidget()
         pad = QtWidgets.QGridLayout(pad_wrap)
         pad.setContentsMargins(0, 0, 0, 0)
-        pad.setSpacing(8)
+        pad.setSpacing(6)
         pad.addWidget(self.ptz_up, 0, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
         pad.addWidget(self.ptz_left, 1, 0, QtCore.Qt.AlignmentFlag.AlignCenter)
         pad.addWidget(self.ptz_stop, 1, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -1095,8 +1240,8 @@ class MainWindow(QtWidgets.QMainWindow):
         pad.addWidget(self.ptz_down, 2, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
         ptz_layout.addWidget(pad_wrap, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)
         # Keep a consistent height in the sidebar to avoid layout squeeze/overlap.
-        self.ptz_group.setMinimumHeight(230)
-        self.ptz_group.setMaximumHeight(230)
+        self.ptz_group.setMinimumHeight(210)
+        self.ptz_group.setMaximumHeight(210)
 
         # PTZ: trimite comenzi repetate cât timp butonul e ținut apăsat (mai robust decât o singură comandă).
         self.ptz_up.pressed.connect(lambda: self._ptz_begin_hold(0.0, 0.45))
@@ -1116,6 +1261,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.add_btn = QtWidgets.QPushButton("Add")
         self.edit_btn = QtWidgets.QPushButton("Edit")
         self.remove_btn = QtWidgets.QPushButton("Remove")
+        try:
+            self.add_btn.setText("➕ Add")
+            self.edit_btn.setText("📝 Edit")
+            self.remove_btn.setText("🗑️ Remove")
+        except Exception:
+            pass
         for b in (self.add_btn, self.edit_btn, self.remove_btn):
             try:
                 b.setObjectName("sidebarActionButton")
@@ -1354,6 +1505,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         logger.info("Closing application...")
         self._closing = True
+        try:
+            self._stop_intercom()
+        except Exception:
+            pass
         try:
             self._ptz_worker_stop.set()
             self._ptz_worker_evt.set()
@@ -1666,6 +1821,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # reset reconnect state when user explicitly (re)selects a camera
         self._reconnect_attempts = 0
         self._reconnect_scheduled = False
+
+        # Intercom is tied to the currently selected camera; stop it when switching cameras.
+        try:
+            if self._current_camera is not None and self._current_camera.id != cam.id:
+                if getattr(self, "intercom_action", None) is not None and bool(self.intercom_action.isChecked()):
+                    self.intercom_action.setChecked(False)
+        except Exception:
+            pass
         self._current_camera = cam
         self._viewing_event_file = None
         
@@ -1701,13 +1864,164 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self._play_camera(cam)
 
-    def _on_intercom_clicked(self) -> None:
-        QtWidgets.QMessageBox.information(
-            self,
-            "Intercom",
-            "Intercom (two-way audio) nu este implementat încă.\n"
-            "Următorul pas: ONVIF/RTSP audio backchannel + UI push-to-talk.",
-        )
+    def _stop_intercom(self) -> None:
+        proc = self._intercom_proc
+        self._intercom_proc = None
+        try:
+            self._intercom_watch_timer.stop()
+        except Exception:
+            pass
+        if proc is None:
+            return
+        try:
+            proc.terminate()
+        except Exception:
+            pass
+        try:
+            proc.wait(timeout=2.0)
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+
+    def _on_intercom_toggled(self, enabled: bool) -> None:
+        if not enabled:
+            self._stop_intercom()
+            try:
+                self.statusBar().showMessage("Intercom: stopped", 2500)
+            except Exception:
+                pass
+            return
+
+        cam = self._current_camera
+        if cam is None:
+            try:
+                self.statusBar().showMessage("Intercom: selectează o cameră", 4000)
+            except Exception:
+                pass
+            try:
+                self.intercom_action.blockSignals(True)
+                self.intercom_action.setChecked(False)
+            finally:
+                self.intercom_action.blockSignals(False)
+            return
+
+        intercom_url = str(getattr(cam, "intercom_url", "") or "").strip()
+        if not intercom_url:
+            try:
+                self.statusBar().showMessage("Intercom: configurează 'Intercom URL' în Add/Edit Camera", 6000)
+            except Exception:
+                pass
+            try:
+                self.intercom_action.blockSignals(True)
+                self.intercom_action.setChecked(False)
+            finally:
+                self.intercom_action.blockSignals(False)
+            return
+
+        ffmpeg = shutil.which("ffmpeg")
+        if not ffmpeg:
+            try:
+                self.statusBar().showMessage("Intercom: ffmpeg nu este instalat (adaugă ffmpeg în PATH)", 8000)
+            except Exception:
+                pass
+            try:
+                self.intercom_action.blockSignals(True)
+                self.intercom_action.setChecked(False)
+            finally:
+                self.intercom_action.blockSignals(False)
+            return
+
+        # Stop any previous process before starting a new one.
+        self._stop_intercom()
+
+        dev = str(getattr(self._settings, "intercom_device", "default") or "default").strip() or "default"
+        input_spec = f"audio={dev}"
+        if dev.lower() != "default":
+            # dshow prefers quoted device names when they contain spaces/special chars
+            if not (dev.startswith('"') and dev.endswith('"')):
+                input_spec = f'audio=\"{dev}\"'
+
+        cmd = [
+            ffmpeg,
+            "-hide_banner",
+            "-loglevel",
+            "warning",
+            "-f",
+            "dshow",
+            "-i",
+            input_spec,
+            "-ac",
+            "1",
+            "-ar",
+            "8000",
+            "-acodec",
+            "pcm_mulaw",
+            "-f",
+            "rtsp",
+            "-rtsp_transport",
+            "tcp",
+            intercom_url,
+        ]
+
+        try:
+            self._intercom_proc = subprocess.Popen(
+                cmd,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            try:
+                self._intercom_watch_timer.start()
+            except Exception:
+                pass
+            try:
+                self.statusBar().showMessage("Intercom: streaming mic -> camera (push-to-talk ON)", 5000)
+            except Exception:
+                pass
+        except Exception as e:
+            self._intercom_proc = None
+            try:
+                self.statusBar().showMessage(f"Intercom: failed to start ffmpeg ({e})", 8000)
+            except Exception:
+                pass
+            try:
+                self.intercom_action.blockSignals(True)
+                self.intercom_action.setChecked(False)
+            finally:
+                self.intercom_action.blockSignals(False)
+
+    def _poll_intercom_proc(self) -> None:
+        proc = self._intercom_proc
+        if proc is None:
+            try:
+                self._intercom_watch_timer.stop()
+            except Exception:
+                pass
+            return
+        try:
+            rc = proc.poll()
+        except Exception:
+            rc = None
+        if rc is None:
+            return
+        # Process ended unexpectedly -> turn off the toggle.
+        self._intercom_proc = None
+        try:
+            self._intercom_watch_timer.stop()
+        except Exception:
+            pass
+        try:
+            self.statusBar().showMessage(f"Intercom: stopped (ffmpeg exited {rc})", 6000)
+        except Exception:
+            pass
+        try:
+            self.intercom_action.blockSignals(True)
+            self.intercom_action.setChecked(False)
+        finally:
+            self.intercom_action.blockSignals(False)
 
     def _on_volume_changed(self, value: int) -> None:
         if self._player is None:

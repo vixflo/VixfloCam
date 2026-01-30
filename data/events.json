@@ -1,5 +1,75 @@
 [
   {
+    "ts": 1769734120.4841719,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\CURTEA_DIN_FAȚĂ_event_20260130_024840.ts"
+  },
+  {
+    "ts": 1769731208.0940864,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\CURTEA_DIN_FAȚĂ_event_20260130_020008.ts"
+  },
+  {
+    "ts": 1769730057.544428,
+    "camera_id": "7cfe1d45-3804-4022-a791-d9e8d5db2e3a",
+    "camera_name": "SPATE ATELIER",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\SPATE_ATELIER_event_20260130_014057.ts"
+  },
+  {
+    "ts": 1769729125.808747,
+    "camera_id": "7cfe1d45-3804-4022-a791-d9e8d5db2e3a",
+    "camera_name": "SPATE ATELIER",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\SPATE_ATELIER_event_20260130_012525.ts"
+  },
+  {
+    "ts": 1769725070.342931,
+    "camera_id": "7463084a-fe90-40de-bf35-7f1be8d1732c",
+    "camera_name": "CURTEA DIN FAȚĂ",
+    "kind": "person",
+    "topics": [
+      "tns1:RuleEngine/PeopleDetector/People",
+      "VideoSourceConfigurationToken=vsconf",
+      "VideoAnalyticsConfigurationToken=VideoAnalyticsToken",
+      "Rule=MyPeopleDetectorRule",
+      "IsPeople=true"
+    ],
+    "file": "C:\\xampp\\htdocs\\vixflodev-ro\\VixfloCam\\data\\recordings\\evenimente2\\CURTEA_DIN_FAȚĂ_event_20260130_001750.ts"
+  },
+  {
     "ts": 1769710524.0022385,
     "camera_id": "193ea58a-b640-434b-a93a-f9b4133f7929",
     "camera_name": "HOL CASA",

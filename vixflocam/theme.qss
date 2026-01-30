@@ -121,11 +121,11 @@ QPushButton#sidebarActionButton {
 QWidget#actionsRow { background: transparent; }
 QToolButton#actionCard {
   background: #2a2b2e;
-  border: 1px solid #3a3b40;
+  border: 2px solid #3a3b40;
   border-radius: 12px;
   padding: 8px;
 }
-QToolButton#actionCard:hover { background: #32343a; }
+QToolButton#actionCard:hover { background: #454954; border: 2px solid #4aa3ff; }
 QToolButton#actionCard:pressed { background: #222327; }
 QToolButton#actionCard:checked { background: #2b79c2; border-color: #2b79c2; color: #ffffff; }
 

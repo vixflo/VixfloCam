@@ -30,6 +30,8 @@ class Camera:
     event_desktop_notifications: bool | None = None
     event_motion_keywords: tuple[str, ...] = ()
     event_person_keywords: tuple[str, ...] = ()
+    # Optional: two-way audio (intercom) target URL (usually RTSP backchannel endpoint)
+    intercom_url: str = ""
 
     def has_structured_config(self) -> bool:
         return bool(self.host and self.password_dpapi_b64)
@@ -82,6 +84,7 @@ def load_cameras(base_dir: Path) -> List[Camera]:
         path = str(item.get("path", "stream1")).strip() or "stream1"
         rtsp_url = str(item.get("rtsp_url", "")).strip()
         onvif_port_raw = item.get("onvif_port", 0)
+        intercom_url = str(item.get("intercom_url", "") or "").strip()
 
         # Per-camera event overrides (optional)
         def as_opt_bool(v: object) -> bool | None:
@@ -158,6 +161,7 @@ def load_cameras(base_dir: Path) -> List[Camera]:
                     event_desktop_notifications=event_desktop_notifications,
                     event_motion_keywords=event_motion_keywords,
                     event_person_keywords=event_person_keywords,
+                    intercom_url=intercom_url,
                 )
             )
             continue

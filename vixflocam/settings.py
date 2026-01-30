@@ -16,6 +16,8 @@ class AppSettings:
     event_record_seconds: int = 60
     event_cooldown_seconds: int = 20
     desktop_notifications: bool = True
+    # Intercom (two-way audio) configuration (ffmpeg-based)
+    intercom_device: str = "default"
 
 
 def _settings_path(base_dir: Path) -> Path:
@@ -61,6 +63,7 @@ def load_settings(base_dir: Path) -> AppSettings:
     detect_person = as_bool(raw.get("detect_person", True), True)
     event_recording_enabled = as_bool(raw.get("event_recording_enabled", False), False)
     desktop_notifications = as_bool(raw.get("desktop_notifications", True), True)
+    intercom_device = str(raw.get("intercom_device", "default") or "default")
 
     event_record_seconds = max(10, min(300, as_int(raw.get("event_record_seconds", 60), 60)))
     event_cooldown_seconds = max(5, min(300, as_int(raw.get("event_cooldown_seconds", 20), 20)))
@@ -73,6 +76,7 @@ def load_settings(base_dir: Path) -> AppSettings:
         event_record_seconds=event_record_seconds,
         event_cooldown_seconds=event_cooldown_seconds,
         desktop_notifications=desktop_notifications,
+        intercom_device=intercom_device,
     )
 
 
@@ -86,5 +90,6 @@ def save_settings(base_dir: Path, settings: AppSettings) -> None:
         "event_record_seconds": int(settings.event_record_seconds),
         "event_cooldown_seconds": int(settings.event_cooldown_seconds),
         "desktop_notifications": bool(settings.desktop_notifications),
+        "intercom_device": str(getattr(settings, "intercom_device", "default") or "default"),
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
